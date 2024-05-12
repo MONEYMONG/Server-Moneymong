@@ -45,10 +45,4 @@ public class UserFacadeService {
         userUniversityService.delete(userId);
         agencyUserService.deleteAll(userId);
     }
-
-    @Transactional
-    public void revoke(UserDeleteRequest deleteRequest, Long userId) {
-        oAuthService.revoke(deleteRequest, userId);
-        delete(userId);
-    }
 }

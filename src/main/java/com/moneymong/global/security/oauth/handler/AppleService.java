@@ -177,7 +177,6 @@ public class AppleService implements OAuthAuthenticationHandler {
             DecodedJWT decoded = JWT.decode(idToken);
             Map<String, Claim> claims = decoded.getClaims();
 
-            log.info("[AppleService] claims = {}", claims.keySet());
             String providerUid = decoded.getSubject();
             String email = claims.get("sub").asString();
 
