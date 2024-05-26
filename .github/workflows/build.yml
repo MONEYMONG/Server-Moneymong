@@ -6,6 +6,7 @@ on:
     - main
     - dev
 
+
 # 권한 설정
 permissions: write-all
 
