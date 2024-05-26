@@ -1,13 +1,14 @@
 package com.moneymong.global.security.service;
 
 import com.moneymong.domain.user.api.request.LoginRequest;
-import com.moneymong.domain.user.api.request.UserDeleteRequest;
 
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.domain.user.repository.UserRepository;
 import com.moneymong.global.exception.custom.NotFoundException;
-import com.moneymong.global.exception.enums.ErrorCode;
 
+import com.moneymong.global.security.oauth.dto.OAuthUserDataRequest;
+import com.moneymong.global.security.oauth.dto.OAuthUserDataResponse;
+import com.moneymong.global.security.oauth.handler.OAuthAuthenticationHandler;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,4 +54,5 @@ public class OAuthService {
         OAuthAuthenticationHandler oAuthHandler = this.oAuthAuthenticationHandlers.get(oAuthProvider);
 
         oAuthHandler.unlink(userId);
+    }
 }
