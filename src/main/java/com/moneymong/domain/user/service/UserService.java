@@ -55,9 +55,6 @@ public class UserService {
 		);
 		newUser = save(newUser);
 
-		log.info("[UserService] registerUserId = {}", newUser.getId());
-		log.info("[UserService] refreshToken = {}", oauthUserInfo.getAppleRefreshToken());
-
 		if (oauthUserInfo.getAppleRefreshToken() != null) {
 			appleUserRepository.save(
 					AppleUser.of(
