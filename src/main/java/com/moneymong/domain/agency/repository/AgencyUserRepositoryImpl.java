@@ -42,7 +42,7 @@ public class AgencyUserRepositoryImpl implements AgencyUserRepositoryCustom {
         return queryFactory.select(agency)
                 .from(agencyUser)
                 .join(agencyUser.agency, agency)
-                .where(agencyUser.userId.eq(userId))
+                .where(agencyUser.userId.eq(userId), notBlocked())
                 .fetch();
     }
 
