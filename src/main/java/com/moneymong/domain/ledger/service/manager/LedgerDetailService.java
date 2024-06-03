@@ -4,6 +4,7 @@ import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
+import com.moneymong.domain.ledger.api.request.UpdateLedgerRequestV2;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
@@ -38,7 +39,6 @@ import static com.moneymong.domain.ledger.entity.enums.FundType.INCOME;
 @Slf4j
 @RequiredArgsConstructor
 public class LedgerDetailService {
-    private final LedgerRepository ledgerRepository;
     private final LedgerAssembler ledgerAssembler;
     private final LedgerReceiptReader ledgerReceiptReader;
     private final LedgerDocumentReader ledgerDocumentReader;
@@ -47,6 +47,8 @@ public class LedgerDetailService {
     private final LedgerDetailRepository ledgerDetailRepository;
     private final LedgerReceiptRepository ledgerReceiptRepository;
     private final LedgerDocumentRepository ledgerDocumentRepository;
+    private final LedgerReceiptManager ledgerReceiptManager;
+    private final LedgerDocumentManager ledgerDocumentManager;
 
     @Transactional
     public LedgerDetail createLedgerDetail(
@@ -123,6 +125,57 @@ public class LedgerDetailService {
                 user
         );
     }
+
+    @Transactional
+    public LedgerDetailInfoView updateLedgerDetailV2(
+            Long userId,
+            Long ledgerDetailId,
+            UpdateLedgerRequestV2 updateLedgerRequest
+    ) {
+
+        User user = getUser(userId);
+
+        LedgerDetail ledgerDetail = getLedgerDetail(ledgerDetailId);
+
+        Ledger ledger = ledgerDetail.getLedger();
+
+        AgencyUser agencyUser = getAgencyUser(user, ledgerDetail);
+
+        validateStaffUserRole(agencyUser.getAgencyUserRole());
+
+        int newAmount = AmountCalculatorByFundType.calculate(
+                ledgerDetail.getFundType(),
+                ledgerDetail.getAmount() - updateLedgerRequest.getAmount()
+        );
+
+        ledger.updateTotalBalance(-newAmount);
+
+        ledgerDetail.updateLedgerDetailInfo(
+                updateLedgerRequest.getStoreInfo(),
+                updateLedgerRequest.getAmount(),
+                updateLedgerRequest.getDescription(),
+                updateLedgerRequest.getPaymentDate()
+        );
+
+        updateBalance(ledger);
+
+        ledgerReceiptRepository.deleteByLedgerDetail(ledgerDetail);
+        ledgerDocumentRepository.deleteByLedgerDetail(ledgerDetail);
+
+        List<LedgerReceipt> receipts = ledgerReceiptManager.createReceipts(ledgerDetailId, updateLedgerRequest.getReceiptImageUrls());
+        List<LedgerDocument> ledgerDocuments = ledgerDocumentManager.createLedgerDocuments(ledgerDetailId, updateLedgerRequest.getDocumentImageUrls());
+
+        ledgerReceiptRepository.saveAll(receipts);
+        ledgerDocumentRepository.saveAll(ledgerDocuments);
+
+        return LedgerDetailInfoView.of(
+                ledgerDetail,
+                receipts,
+                ledgerDocuments,
+                user
+        );
+    }
+
 
     @Transactional
     public void removeLedgerDetail(
