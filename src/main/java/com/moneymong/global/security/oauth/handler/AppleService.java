@@ -181,6 +181,7 @@ public class AppleService implements OAuthAuthenticationHandler {
             String providerUid = decoded.getSubject();
             String email = claims.get("sub").asString();
 
+            log.info("email = {}", email);
             return OAuthUserDataResponse.builder()
                     .provider(getAuthProvider().toString())
                     .oauthId(providerUid)
