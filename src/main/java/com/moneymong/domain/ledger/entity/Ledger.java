@@ -47,15 +47,23 @@ public class Ledger extends TimeBaseEntity {
                 .add(new BigDecimal(newAmount));
 
         // 장부 금액 최소 초과 검증
-        BigDecimal minValue = new BigDecimal("-999999999");
-        BigDecimal maxValue = new BigDecimal("999999999");
-        if (!(expectedAmount.compareTo(minValue) >= 0 &&
-                expectedAmount.compareTo(maxValue) <= 0)
-        ) {
-            throw new BadRequestException(ErrorCode.INVALID_LEDGER_AMOUNT);
-        }
+        validateTotalBalance(expectedAmount);
 
         this.totalBalance = expectedAmount.intValue();
+    }
+
+    private void validateTotalBalance(BigDecimal expectedAmount) {
+        BigDecimal minValue = new BigDecimal("-999999999");
+        BigDecimal maxValue = new BigDecimal("999999999");
+
+        if (expectedAmount.compareTo(minValue) < 0) {
+            throw new BadRequestException(ErrorCode.LEDGER_AMOUNT_UNDERFLOW);
+        }
+
+        if (expectedAmount.compareTo(maxValue) > 0) {
+            throw new BadRequestException(ErrorCode.LEDGER_AMOUNT_OVERFLOW);
+
+        }
     }
 
     public static Ledger of(

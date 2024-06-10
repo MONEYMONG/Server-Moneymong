@@ -14,7 +14,6 @@ import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.ledger.repository.LedgerDetailRepository;
 import com.moneymong.domain.ledger.repository.LedgerDocumentRepository;
 import com.moneymong.domain.ledger.repository.LedgerReceiptRepository;
-import com.moneymong.domain.ledger.repository.LedgerRepository;
 import com.moneymong.domain.ledger.service.mapper.LedgerAssembler;
 import com.moneymong.domain.ledger.service.reader.LedgerDocumentReader;
 import com.moneymong.domain.ledger.service.reader.LedgerReceiptReader;

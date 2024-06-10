@@ -72,7 +72,7 @@ public class LedgerDocumentManager {
 
         LedgerDocument ledgerDocument = ledgerDocumentRepository
                 .findById(documentId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DOCUUMENT_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DOCUMENT_NOT_FOUND));
 
         ledgerDocumentRepository.delete(ledgerDocument);
     }
