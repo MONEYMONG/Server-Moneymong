@@ -47,12 +47,10 @@ public class AgencyUserService {
         validateStaffUserRole(staffUser);
 
         AgencyUser targetUser = getAgencyUser(request.getUserId(), agencyId);
-
-        targetUser.updateAgencyUserRole(BLOCKED);
-
         InvitationCodeCertification certification = getCertification(agencyId, request);
-
-        certification.revoke();
+        
+        agencyUserRepository.delete(targetUser);
+        invitationCodeCertificationRepository.delete(certification);
 
         Agency agency = getAgency(agencyId);
 
