@@ -43,7 +43,7 @@ public class Agency extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AgencyType agencyType;
 
-    @OneToMany(mappedBy = "agency", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "agency", cascade = CascadeType.ALL)
     private List<AgencyUser> agencyUsers = new ArrayList<>();
 
     @Column(
