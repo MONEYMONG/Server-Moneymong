@@ -49,7 +49,7 @@ public class UserService {
 	public User registerUser(OAuthUserInfo oauthUserInfo) {
 		User newUser = User.of(
 				oauthUserInfo.getEmail(),
-				oauthUserInfo.getNickname() == null ? "tester" : oauthUserInfo.getNickname(),
+				oauthUserInfo.getNickname() == null ? "유저" : oauthUserInfo.getNickname(),
 				oauthUserInfo.getProvider(),
 				oauthUserInfo.getOauthId()
 		);

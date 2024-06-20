@@ -31,7 +31,7 @@ services:
       APPLE_TEAM_ID: ${APPLE_TEAM_ID}
       APPLE_KEY_ID: ${APPLE_KEY_ID}
       APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}
-
+      KAKAO_ADMIN_KEY: ${KAKAO_ADMIN_KEY}
   redis:
     container_name: moneymong-redis
     image: redis
