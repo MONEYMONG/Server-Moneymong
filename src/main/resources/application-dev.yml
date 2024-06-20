@@ -11,6 +11,7 @@ spring:
     oauth2:
       kakao:
         host: https://kapi.kakao.com
+        admin-key: ${KAKAO_ADMIN_KEY}
       apple:
         host: https://appleid.apple.com
         grant-type: authorization_code
