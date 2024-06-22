@@ -61,14 +61,14 @@ public class LedgerReceiptManager {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
 
         // === 소속 ===
-        AgencyUser agencyUser = agencyUserRepository
-                .findByUserIdAndAgencyId(user.getId(), ledgerDetail.getLedger().getAgency().getId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
-
-        // === 권한 ===
-        if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
-            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
-        }
+//        AgencyUser agencyUser = agencyUserRepository
+//                .findByUserIdAndAgencyId(user.getId(), ledgerDetail.getLedger().getAgency().getId())
+//                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+//
+//        // === 권한 ===
+//        if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
+//            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
+//        }
 
         LedgerReceipt ledgerReceipt = ledgerReceiptRepository
                 .findById(receiptId)
