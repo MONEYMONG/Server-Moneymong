@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -26,14 +27,14 @@ public interface LedgerDetailCustom {
             PageRequest pageable
     );
 
-    List<LedgerDetail> searchByPeriod(
+    Page<LedgerDetail> searchByPeriod(
             Ledger ledger,
             ZonedDateTime from,
             ZonedDateTime to,
             PageRequest pageable
     );
 
-    List<LedgerDetail> searchByPeriodAndFundType(
+    Page<LedgerDetail> searchByPeriodAndFundType(
             Ledger ledger,
             ZonedDateTime from,
             ZonedDateTime to,

@@ -6,6 +6,7 @@ import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.ledger.repository.LedgerDetailCustom;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import java.time.LocalTime;
@@ -15,8 +16,10 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -59,7 +62,7 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
     }
 
     @Override
-    public List<LedgerDetail> searchByPeriod(
+    public Page<LedgerDetail> searchByPeriod(
             Ledger ledger,
             ZonedDateTime from,
             ZonedDateTime to,
@@ -68,17 +71,24 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
         ZonedDateTime endOfMonth = to.with(TemporalAdjusters.lastDayOfMonth())
                 .with(LocalTime.MAX);
 
-        return jpaQueryFactory.selectFrom(ledgerDetail)
+        List<LedgerDetail> ledgerDetails = jpaQueryFactory.selectFrom(ledgerDetail)
                 .where(ledgerDetail.ledger.eq(ledger))
                 .where(ledgerDetail.paymentDate.between(from, endOfMonth))
                 .orderBy(ledgerDetail.paymentDate.desc())
                 .offset((long) pageable.getPageNumber() * pageable.getPageSize())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        JPAQuery<Long> countQuery = jpaQueryFactory.select(ledgerDetail.count())
+                .from(ledgerDetail)
+                .where(ledgerDetail.ledger.eq(ledger))
+                .where(ledgerDetail.paymentDate.between(from, endOfMonth));
+
+        return PageableExecutionUtils.getPage(ledgerDetails, pageable, countQuery::fetchOne);
     }
 
     @Override
-    public List<LedgerDetail> searchByPeriodAndFundType(
+    public Page<LedgerDetail> searchByPeriodAndFundType(
             Ledger ledger,
             ZonedDateTime from,
             ZonedDateTime to,
@@ -88,7 +98,7 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
         ZonedDateTime endOfMonth = to.with(TemporalAdjusters.lastDayOfMonth())
                 .with(LocalTime.MAX);
 
-        return jpaQueryFactory.selectFrom(ledgerDetail)
+        List<LedgerDetail> ledgerDetails = jpaQueryFactory.selectFrom(ledgerDetail)
                 .where(ledgerDetail.ledger.eq(ledger))
                 .where(ledgerDetail.fundType.eq(fundType))
                 .where(ledgerDetail.paymentDate.between(from, endOfMonth))
@@ -96,6 +106,14 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
                 .offset((long) pageable.getPageNumber() * pageable.getPageSize())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        JPAQuery<Long> countQuery = jpaQueryFactory.select(ledgerDetail.count())
+                .from(ledgerDetail)
+                .where(ledgerDetail.ledger.eq(ledger))
+                .where(ledgerDetail.fundType.eq(fundType))
+                .where(ledgerDetail.paymentDate.between(from, endOfMonth));
+
+        return PageableExecutionUtils.getPage(ledgerDetails, pageable, countQuery::fetchOne);
     }
 
     @Override

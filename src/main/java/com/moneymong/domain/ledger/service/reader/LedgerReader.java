@@ -5,6 +5,7 @@ import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoView;
 import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoViewDetail;
+import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoViewV2;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.enums.FundType;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +39,7 @@ public class LedgerReader {
     private final LedgerRepository ledgerRepository;
     private final LedgerDetailRepository ledgerDetailRepository;
 
-    public LedgerInfoView searchLedgersByPeriod(
+    public LedgerInfoViewV2 searchLedgersByPeriod(
             long userId,
             long ledgerId,
             int startYear,
@@ -55,17 +57,21 @@ public class LedgerReader {
         ZonedDateTime from = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0, ZoneId.systemDefault());
         ZonedDateTime to = ZonedDateTime.of(endYear, endMonth, 1, 0, 0, 0, 0, ZoneId.systemDefault());
 
-        List<LedgerDetail> ledgerDetails = ledgerDetailRepository.searchByPeriod(
+        Page<LedgerDetail> ledgerDetailPage = ledgerDetailRepository.searchByPeriod(
                 ledger,
                 from,
                 to,
                 PageRequest.of(page, limit)
         );
 
-        return LedgerInfoView.from(ledger, convertToLedgerInfoViewDetail(ledgerDetails));
+
+        List<LedgerDetail> ledgerDetails = ledgerDetailPage.getContent();
+        long totalCount = ledgerDetailPage.getTotalElements();
+
+        return LedgerInfoViewV2.from(ledger, convertToLedgerInfoViewDetail(ledgerDetails), totalCount);
     }
 
-    public LedgerInfoView searchLedgersByPeriodAndFundType(
+    public LedgerInfoViewV2 searchLedgersByPeriodAndFundType(
             long userId,
             long ledgerId,
             int startYear,
@@ -84,7 +90,7 @@ public class LedgerReader {
         ZonedDateTime from = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0, ZoneId.systemDefault());
         ZonedDateTime to = ZonedDateTime.of(endYear, endMonth, 1, 0, 0, 0, 0, ZoneId.systemDefault());
 
-        List<LedgerDetail> ledgerDetails = ledgerDetailRepository.searchByPeriodAndFundType(
+        Page<LedgerDetail> ledgerDetailPage = ledgerDetailRepository.searchByPeriodAndFundType(
                 ledger,
                 from,
                 to,
@@ -92,7 +98,10 @@ public class LedgerReader {
                 PageRequest.of(page, limit)
         );
 
-        return LedgerInfoView.from(ledger, convertToLedgerInfoViewDetail(ledgerDetails));
+        List<LedgerDetail> ledgerDetails = ledgerDetailPage.getContent();
+        long totalCount = ledgerDetailPage.getTotalElements();
+
+        return LedgerInfoViewV2.from(ledger, convertToLedgerInfoViewDetail(ledgerDetails), totalCount);
     }
 
     public LedgerInfoView search(

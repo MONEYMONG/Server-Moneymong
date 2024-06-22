@@ -2,7 +2,7 @@ package com.moneymong.domain.ledger.api;
 
 import com.moneymong.domain.ledger.api.request.*;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
-import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoView;
+import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoViewV2;
 import com.moneymong.domain.ledger.service.manager.LedgerDetailService;
 import com.moneymong.domain.ledger.service.reader.LedgerReader;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
@@ -24,7 +24,7 @@ public class LedgerControllerV2 {
 
     @Operation(summary = " 장부 내역 조회 API")
     @GetMapping("/{id}")
-    public LedgerInfoView search(
+    public LedgerInfoViewV2 search(
             @AuthenticationPrincipal JwtAuthentication user,
             @PathVariable("id") final Long ledgerId,
             @ParameterObject @Valid final SearchLedgerRequestV2 searchLedgerRequest
@@ -43,7 +43,7 @@ public class LedgerControllerV2 {
 
     @Operation(summary = "장부 내역 필터별 조회 API")
     @GetMapping("/{id}/filter")
-    public LedgerInfoView searchByFilter(
+    public LedgerInfoViewV2 searchByFilter(
             @AuthenticationPrincipal JwtAuthentication user,
             @PathVariable("id") final Long ledgerId,
             @ParameterObject @Valid final SearchLedgerFilterRequestV2 searchLedgerFilterRequest
