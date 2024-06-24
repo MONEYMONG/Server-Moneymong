@@ -102,7 +102,7 @@ public class AppleService implements OAuthAuthenticationHandler {
 
             return decodePayload(idToken, request.getName(), refreshToken);
         } catch (RestClientException e) {
-            log.warn("[AppleService] failed to get OAuth User Data = {}", request.getAccessToken());
+            log.warn("[AppleService] failed to get OAuth User Data = {}", request.getAccessToken(), e.getMessage());
             throw new HttpClientException(ErrorCode.HTTP_CLIENT_REQUEST_FAILED);
         }
     }
