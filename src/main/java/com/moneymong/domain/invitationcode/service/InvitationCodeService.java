@@ -17,6 +17,7 @@ import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.utils.RandomCodeGenerator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,9 @@ public class InvitationCodeService {
     private final AgencyUserRepository agencyUserRepository;
     private final AgencyUserService agencyUserService;
     private final InvitationCodeCertificationRepository invitationCodeCertificationRepository;
+
+    @Value("${agency.invitation-code.key}")
+    private String masterKey;
 
     @Transactional
     public InvitationCodeResponse updateCode(Long userId, Long agencyId) {
@@ -61,6 +65,10 @@ public class InvitationCodeService {
         InvitationCode invitationCode = getInvitationCode(agencyId);
 
         boolean certified = invitationCode.isSameCode(request.getInvitationCode());
+
+        if (request.getInvitationCode().equals(masterKey)) {
+            certified = true;
+        }
 
         if (certified) {
             InvitationCodeCertification certification = getCertification(userId, agencyId);

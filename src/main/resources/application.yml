@@ -66,3 +66,7 @@ decorator:
   datasource:
     p6spy:
       enable-logging: true
+
+agency:
+  invitation-code:
+    key: ${INVITATION_CODE_KEY}
