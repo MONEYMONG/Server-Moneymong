@@ -168,7 +168,6 @@ public class AppleService implements OAuthAuthenticationHandler {
 
             PrivateKey key = converter.getPrivateKey(privateKeyInfo);
 
-            log.info("key = {}", key);
             return key;
         } catch (Exception e) {
             throw new RuntimeException("Error converting private key from String", e);
