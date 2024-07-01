@@ -20,11 +20,14 @@
     <springProfile name="prod">
         <include resource="appender/moneymong-console-appender.xml"/>
         <include resource="appender/moneymong-file-appender.xml"/>
-        <root level="INFO">
-            <appender-ref ref="CONSOLE_APPENDER"/>
-        </root>
-        <root level="INFO">
+        <include resource="appender/moneymong-error-file-appender.xml"/>
+
+        <logger name="org.springframework" level="INFO" additivity="false">
             <appender-ref ref="FILE_APPENDER"/>
+        </logger>
+
+        <root level="WARN">
+            <appender-ref ref="ERROR_FILE_APPENDER"/>
         </root>
     </springProfile>
 </configuration>
