@@ -33,6 +33,9 @@ services:
       APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}
       KAKAO_ADMIN_KEY: ${KAKAO_ADMIN_KEY}
       INVITATION_CODE_KEY: ${INVITATION_CODE_KEY}
+    volumes:
+      - ./logfile:/logs
+
   redis:
     container_name: moneymong-redis
     image: redis
