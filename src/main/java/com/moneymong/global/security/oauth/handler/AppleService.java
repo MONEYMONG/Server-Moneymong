@@ -122,7 +122,7 @@ public class AppleService implements OAuthAuthenticationHandler {
         params.add("token_type_hint", "refresh_token");
 
         URI uri = UriComponentsBuilder
-                .fromUriString(host + "/auth/oauth2/v2/revoke")
+                .fromUriString(host + "/auth/revoke")
                 .build()
                 .toUri();
 
@@ -165,7 +165,11 @@ public class AppleService implements OAuthAuthenticationHandler {
             byte[] privateKeyBytes = Base64.getDecoder().decode(privateKey);
 
             PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
-            return converter.getPrivateKey(privateKeyInfo);
+
+            PrivateKey key = converter.getPrivateKey(privateKeyInfo);
+
+            log.info("key = {}", key);
+            return key;
         } catch (Exception e) {
             throw new RuntimeException("Error converting private key from String", e);
         }
