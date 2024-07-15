@@ -4,6 +4,7 @@ import com.moneymong.domain.agency.api.request.CreateAgencyRequest;
 import com.moneymong.domain.agency.api.response.*;
 import com.moneymong.domain.agency.entity.Agency;
 import com.moneymong.domain.agency.entity.AgencyUser;
+import com.moneymong.domain.agency.entity.enums.AgencyType;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.exception.BlockedAgencyUserException;
 import com.moneymong.domain.agency.repository.AgencyRepository;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.moneymong.domain.agency.entity.enums.AgencyType.GENERAL;
 import static com.moneymong.domain.agency.entity.enums.AgencyUserRole.*;
 
 @Service
@@ -47,16 +49,18 @@ public class AgencyService {
     public SearchAgencyResponse getAgencyList(Long userId, Pageable pageable) {
         String universityName = getUniversityName(userId);
 
-        Page<Agency> findByUniversityNameResult = agencyRepository.findByUniversityNameByPaging(universityName,
-                pageable);
+        Page<Agency> findByUniversityNameResult = agencyRepository.findByUniversityNameAndAgencyTypeByPaging(
+            universityName,
+            GENERAL,
+            pageable);
 
         long totalCount = findByUniversityNameResult.getTotalElements();
 
-        List<AgencyResponse> responseList = findByUniversityNameResult.stream()
+        List<AgencyResponse> responses = findByUniversityNameResult.stream()
                 .map(AgencyResponse::from)
                 .toList();
 
-        return new SearchAgencyResponse(responseList, totalCount);
+        return new SearchAgencyResponse(responses, totalCount);
     }
 
     @Transactional
@@ -87,10 +91,9 @@ public class AgencyService {
     }
 
     private String getUniversityName(Long userId) {
-        UserUniversity university = userUniversityRepository.findByUserId(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_UNIVERSITY_NOT_FOUND));
-
-        return university.getUniversityName();
+        return userUniversityRepository.findByUserId(userId)
+            .map(UserUniversity::getUniversityName)
+            .orElse(null);
     }
 
     public AgencyUserResponses getAgencyUserList(Long userId, Long agencyId) {

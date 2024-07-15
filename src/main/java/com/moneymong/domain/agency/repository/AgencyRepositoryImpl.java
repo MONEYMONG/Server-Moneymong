@@ -1,6 +1,7 @@
 package com.moneymong.domain.agency.repository;
 
 import com.moneymong.domain.agency.entity.Agency;
+import com.moneymong.domain.agency.entity.enums.AgencyType;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -33,11 +34,30 @@ public class AgencyRepositoryImpl implements AgencyRepositoryCustom {
         return PageableExecutionUtils.getPage(result, pageable, () -> countQuery.fetch().size());
     }
 
+    @Override
+    public Page<Agency> findByUniversityNameAndAgencyTypeByPaging(String universityName, AgencyType type,
+        Pageable pageable) {
+        JPAQuery<Agency> query = queryFactory.selectFrom(agency)
+            .where(eqUniversityName(universityName).or(agency.agencyType.eq(type)))
+            .limit(pageable.getPageSize())
+            .offset(pageable.getOffset());
+
+        List<Agency> result = query.fetch();
+        JPAQuery<Agency> countQuery = getCountQuery(universityName, type);
+
+        return PageableExecutionUtils.getPage(result, pageable, () -> countQuery.fetch().size());
+
+    }
+
     private JPAQuery<Agency> getCountQuery(String universityName) {
         return queryFactory.selectFrom(agency)
                 .where(eqUniversityName(universityName));
     }
 
+    private JPAQuery<Agency> getCountQuery(String universityName, AgencyType type) {
+        return queryFactory.selectFrom(agency)
+            .where(eqUniversityName(universityName).or(agency.agencyType.eq(type)));
+    }
     private BooleanExpression eqUniversityName(String universityName) {
         return universityName != null ? agency.universityName.eq(universityName) : null;
     }

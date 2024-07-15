@@ -25,6 +25,7 @@ import java.util.UUID;
 public class UserService {
 
 	public static final String DEFAULT_ROLE = "ROLE_USER";
+	public static final String DEFAULT_NICKNAME = "유저";
 
 	private final UserRepository userRepository;
 	private final UserUniversityRepository userUniversityRepository;
@@ -49,7 +50,7 @@ public class UserService {
 	public User registerUser(OAuthUserInfo oauthUserInfo) {
 		User newUser = User.of(
 				oauthUserInfo.getEmail(),
-				oauthUserInfo.getNickname() == null ? "유저" : oauthUserInfo.getNickname(),
+				oauthUserInfo.getNickname() == null ? DEFAULT_NICKNAME : oauthUserInfo.getNickname(),
 				oauthUserInfo.getProvider(),
 				oauthUserInfo.getOauthId()
 		);
