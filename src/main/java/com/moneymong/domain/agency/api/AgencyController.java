@@ -81,4 +81,13 @@ public class AgencyController {
     public List<AgencyResponse> getMyAgency(@AuthenticationPrincipal JwtAuthentication user) {
         return agencyService.getMyAgency(user.getId());
     }
+
+    @Operation(summary = "소속 삭제")
+    @DeleteMapping("/{agencyId}")
+    public void delete(
+        @AuthenticationPrincipal JwtAuthentication user,
+        @PathVariable("agencyId") Long agencyId
+        ) {
+        agencyService.delete(user.getId(), agencyId);
+    }
 }

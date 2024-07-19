@@ -4,7 +4,6 @@ import com.moneymong.domain.agency.api.request.CreateAgencyRequest;
 import com.moneymong.domain.agency.api.response.*;
 import com.moneymong.domain.agency.entity.Agency;
 import com.moneymong.domain.agency.entity.AgencyUser;
-import com.moneymong.domain.agency.entity.enums.AgencyType;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.exception.BlockedAgencyUserException;
 import com.moneymong.domain.agency.repository.AgencyRepository;
@@ -17,6 +16,7 @@ import com.moneymong.domain.invitationcode.repository.InvitationCodeCertificatio
 import com.moneymong.domain.invitationcode.repository.InvitationCodeRepository;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.repository.LedgerRepository;
+import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.user.entity.UserUniversity;
 import com.moneymong.domain.user.repository.UserUniversityRepository;
 import com.moneymong.global.exception.custom.NotFoundException;
@@ -45,6 +45,7 @@ public class AgencyService {
     private final LedgerRepository ledgerRepository;
     private final InvitationCodeRepository invitationCodeRepository;
     private final InvitationCodeCertificationRepository invitationCodeCertificationRepository;
+    private final LedgerService ledgerService;
 
     public SearchAgencyResponse getAgencyList(Long userId, Pageable pageable) {
         String universityName = getUniversityName(userId);
@@ -132,5 +133,17 @@ public class AgencyService {
         return agencyList.stream()
                 .map(AgencyResponse::from)
                 .toList();
+    }
+
+    @Transactional
+    public void delete(Long userId, Long agencyId) {
+        validateAgencyUserRole(userId, agencyId);
+
+        Agency agency = agencyRepository.findById(agencyId)
+            .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+
+        ledgerService.deleteLedger(agencyId);
+
+        agencyRepository.delete(agency);
     }
 }
