@@ -139,4 +139,14 @@ public class LedgerService {
                 .findById(ledgerDetailId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
     }
+
+    public void deleteLedger(Long agencyId) {
+        Ledger ledger = ledgerRepository.findByAgencyId(agencyId)
+            .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND));
+
+        List<LedgerDetail> ledgerDetails = ledgerDetailRepository.findAllByLedger(ledger);
+
+        ledgerDetailRepository.deleteAll(ledgerDetails);
+        ledgerRepository.delete(ledger);
+    }
 }
