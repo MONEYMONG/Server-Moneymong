@@ -37,6 +37,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/api/v1/users").permitAll();
                     auth.requestMatchers("/api/v1/tokens").permitAll();
                     auth.requestMatchers("/actuator/**").permitAll();
+                    auth.anyRequest().authenticated();
                 })
                 .exceptionHandling(handler -> handler.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
