@@ -34,7 +34,13 @@ public class UserFacadeService {
         boolean loginSuccess = true;
         boolean schoolInfoExists = userUniversityService.exists(registerResult.getUserId());
 
-        return LoginSuccessResponse.of(tokens.getAccessToken(), tokens.getRefreshToken(), loginSuccess, schoolInfoExists);
+        return LoginSuccessResponse.of(
+            tokens.getAccessToken(),
+            tokens.getRefreshToken(),
+            loginSuccess,
+            schoolInfoExists,
+            schoolInfoExists   // schoolInfoExists와 동일한 값을 반환하며, 추후 schoolInfoExists 필드를 삭제한다.
+        );
     }
 
     @Transactional
