@@ -7,7 +7,6 @@ import com.moneymong.domain.user.service.UserUniversityService;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +30,7 @@ public class UserUniversityController {
     @PostMapping
     public void createUserUniversity(
             @AuthenticationPrincipal JwtAuthentication user,
-            @RequestBody @Valid CreateUserUniversityRequest request
+            @RequestBody CreateUserUniversityRequest request
     ) {
         userUniversityService.create(user.getId(), request);
     }
@@ -40,7 +39,7 @@ public class UserUniversityController {
     @PatchMapping
     public void updateUserUniversity(
             @AuthenticationPrincipal JwtAuthentication user,
-            @RequestBody @Valid UpdateUserUniversityRequest request
+            @RequestBody UpdateUserUniversityRequest request
     ) {
         userUniversityService.update(user.getId(), request);
     }
