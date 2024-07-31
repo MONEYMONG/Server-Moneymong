@@ -42,12 +42,12 @@ public class UserUniversity extends TimeBaseEntity {
     @Column
     private Integer grade;
 
-    public void update(String universityName, int grade) {
+    public void update(String universityName, Integer grade) {
         this.universityName = universityName;
         this.grade = grade;
     }
 
-    public static UserUniversity of(Long userId, String universityName, int grade) {
+    public static UserUniversity of(Long userId, String universityName, Integer grade) {
         return UserUniversity.builder()
                 .userId(userId)
                 .universityName(universityName)
