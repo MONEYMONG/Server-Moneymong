@@ -142,7 +142,7 @@ public class AgencyService {
         Agency agency = agencyRepository.findById(agencyId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
 
-        ledgerService.deleteLedger(agencyId);
+//        ledgerService.deleteLedger(agencyId);
 
         agencyRepository.delete(agency);
     }
