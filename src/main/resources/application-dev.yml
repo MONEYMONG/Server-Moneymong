@@ -22,16 +22,16 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+      host: localhost
+      port: 6379
 
 # db 설정
 datasource:
   db:
     pool-name: moneymong
-    jdbc-url: jdbc:mysql://moneymong-db:3306/moneymong?useSSL=false&&allowPublicKeyRetrieval=true
+    jdbc-url: jdbc:mysql://49.50.162.109:3306/moneymong?useSSL=false&&allowPublicKeyRetrieval=true
     username: root
-    password: ${DB_ROOT_PASSWORD}
+    password: ajslajslahdahd1!
     driver-class-name: com.mysql.cj.jdbc.Driver
     maximum-pool-size: 5
     connection-timeout: 3000
@@ -62,5 +62,5 @@ jwt:
   issuer: MONEYMONG
   secret-key: ${JWT_SECRET_KEY}
   expiry-seconds:
-    access-token: 1800
+    access-token: 259200
     refresh-token: 1209600
