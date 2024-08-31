@@ -15,7 +15,7 @@ public class UserProfileResponse {
     private String nickname;
     private String email;
     private String universityName;
-    private int grade;
+    private Integer grade;
 
     public static UserProfileResponse from(User user, UserUniversity userUniversity) {
         return UserProfileResponse.builder()

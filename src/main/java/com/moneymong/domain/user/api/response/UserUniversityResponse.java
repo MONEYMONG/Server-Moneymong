@@ -9,9 +9,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserUniversityResponse {
     private String universityName;
-    private int grade;
+    private Integer grade;
 
-    public static UserUniversityResponse of(String universityName, int grade) {
+    public static UserUniversityResponse of(String universityName, Integer grade) {
         return UserUniversityResponse.builder()
                 .universityName(universityName)
                 .grade(grade)

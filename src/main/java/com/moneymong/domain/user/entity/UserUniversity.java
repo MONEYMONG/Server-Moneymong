@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.util.Assert;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -36,24 +35,19 @@ public class UserUniversity extends TimeBaseEntity {
 
     @Column(
             name = "university_name",
-            length = 100,
-            nullable = false
+            length = 100
     )
     private String universityName;
 
-    @Column(nullable = false)
-    private int grade;
+    @Column
+    private Integer grade;
 
-    public void update(String universityName, int grade) {
-        Assert.hasText(universityName, "대학 이름은 필수 입력값입니다.");
-
+    public void update(String universityName, Integer grade) {
         this.universityName = universityName;
         this.grade = grade;
     }
 
-    public static UserUniversity of(Long userId, String universityName, int grade) {
-        Assert.hasText(universityName, "대학 이름은 필수 입력값입니다.");
-
+    public static UserUniversity of(Long userId, String universityName, Integer grade) {
         return UserUniversity.builder()
                 .userId(userId)
                 .universityName(universityName)

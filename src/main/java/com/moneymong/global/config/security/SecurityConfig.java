@@ -58,7 +58,8 @@ public class SecurityConfig {
                             "/swagger-config/**",
                             "/webjars/**",
                             "/swagger/**",
-                            "/favicon.ico"
+                            "/favicon.ico",
+                            "/.well-known/**"
                     );
         };
     }
