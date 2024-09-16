@@ -1,19 +1,5 @@
 version: '3'
 services:
-  db:
-    container_name: moneymong-db
-    image: mysql
-    environment:
-      MYSQL_DATABASE: moneymong
-      MYSQL_USERNAME: root
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      TZ: Asia/Seoul
-    ports:
-      - ${DOCKER_DB_PORT}
-    volumes:
-      - ./mysqldata:/var/lib/mysql2
-    restart: always
-
   server:
     container_name: server
     image: ${DOCKER_IMAGE_NAME}
