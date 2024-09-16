@@ -16,7 +16,6 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 public class CreateLedgerRequest {
     @NotBlank(message = "storeInfo를 입력해주세요.")
-    @Size(min = 1, max = 20, message = "storeInfo 1자 - 20자 입력해주세요.")
     private String storeInfo;
 
     @NotNull(message = "fundType(INCOME, EXPENSE)를 입력해주세요.")
