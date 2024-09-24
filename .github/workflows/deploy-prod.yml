@@ -69,5 +69,7 @@ jobs:
             sudo cp /home/ubuntu/.docker/docker-compose.yml /home/ubuntu
             cd /home/ubuntu
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
+            docker-compose stop server
+            docker-compose rm -f server
             docker-compose up -d
             docker image prune -f
