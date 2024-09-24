@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feat/**
 
 # 권한 설정
 permissions:
