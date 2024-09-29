@@ -22,7 +22,7 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: 43.200.104.70
       port: 6379
 
 # db 설정
