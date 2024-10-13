@@ -36,6 +36,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/favicon.ico").permitAll();
                     auth.requestMatchers("/api/v1/users").permitAll();
                     auth.requestMatchers("/api/v1/tokens").permitAll();
+                    auth.requestMatchers("/api/v1/version").permitAll();
                     auth.requestMatchers("/actuator/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
