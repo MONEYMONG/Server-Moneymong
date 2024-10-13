@@ -70,3 +70,7 @@ decorator:
 agency:
   invitation-code:
     key: ${INVITATION_CODE_KEY}
+
+app:
+  minimum:
+    version: ${APP_MINIMUM_VERSION}

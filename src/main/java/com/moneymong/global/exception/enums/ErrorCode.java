@@ -11,6 +11,7 @@ public enum ErrorCode {
     BAD_REQUEST(MoneymongConstant.BAD_REQUEST, "GLOBAL-400", "잘못된 요청입니다."),
     ACCESS_DENIED(MoneymongConstant.FORBIDDEN, "GLOBAL-403", "접근 권한이 없습니다."),
     INTERNAL_SERVER(MoneymongConstant.INTERNAL_SERVER_ERROR, "GLOBAL-500", "서버 내부 오류입니다."),
+    VERSION_TOO_LOW(MoneymongConstant.BAD_REQUEST, "GLOBAL-400", "앱 업데이트가 필요합니다."),
 
     // ---- 유저 ---- //
     USER_NOT_FOUND(MoneymongConstant.NOT_FOUND, "USER-001", "존재하지 않는 회원입니다."),
