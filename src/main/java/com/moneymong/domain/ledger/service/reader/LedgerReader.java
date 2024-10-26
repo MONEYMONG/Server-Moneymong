@@ -67,8 +67,9 @@ public class LedgerReader {
 
         List<LedgerDetail> ledgerDetails = ledgerDetailPage.getContent();
         long totalCount = ledgerDetailPage.getTotalElements();
+        String agencyName = agencyUser.getAgency().getAgencyName();
 
-        return LedgerInfoViewV2.from(ledger, convertToLedgerInfoViewDetail(ledgerDetails), totalCount);
+        return LedgerInfoViewV2.from(ledger, convertToLedgerInfoViewDetail(ledgerDetails), totalCount, agencyName);
     }
 
     public LedgerInfoViewV2 searchLedgersByPeriodAndFundType(
@@ -100,8 +101,9 @@ public class LedgerReader {
 
         List<LedgerDetail> ledgerDetails = ledgerDetailPage.getContent();
         long totalCount = ledgerDetailPage.getTotalElements();
+        String agencyName = agencyUser.getAgency().getAgencyName();
 
-        return LedgerInfoViewV2.from(ledger, convertToLedgerInfoViewDetail(ledgerDetails), totalCount);
+        return LedgerInfoViewV2.from(ledger, convertToLedgerInfoViewDetail(ledgerDetails), totalCount, agencyName);
     }
 
     public LedgerInfoView search(

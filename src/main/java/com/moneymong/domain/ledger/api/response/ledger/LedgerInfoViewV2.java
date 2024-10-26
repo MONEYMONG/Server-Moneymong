@@ -15,17 +15,20 @@ public class LedgerInfoViewV2 {
     final Integer totalBalance;
     final List<LedgerInfoViewDetail> ledgerInfoViewDetails;
     final long ledgerDetailTotalCount;
+    final String agencyName;
 
     public static LedgerInfoViewV2 from(
             Ledger ledger,
             List<LedgerInfoViewDetail> ledgerInfoViewDetails,
-            long ledgerDetailTotalCount
+            long ledgerDetailTotalCount,
+            String agencyName
     ) {
         return LedgerInfoViewV2.builder()
                 .id(ledger.getId())
                 .totalBalance(ledger.getTotalBalance())
                 .ledgerInfoViewDetails(ledgerInfoViewDetails)
                 .ledgerDetailTotalCount(ledgerDetailTotalCount)
+                .agencyName(agencyName)
                 .build();
     }
 }
