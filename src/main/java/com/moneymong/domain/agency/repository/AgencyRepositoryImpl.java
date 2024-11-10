@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static com.moneymong.domain.agency.entity.QAgency.agency;
+import static com.moneymong.domain.agency.entity.enums.AgencyType.GENERAL;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,6 +51,27 @@ public class AgencyRepositoryImpl implements AgencyRepositoryCustom {
         return PageableExecutionUtils.getPage(result, pageable, () -> countQuery.fetch().size());
 
     }
+
+    @Override
+    public List<Agency> findByKeyword(String university, String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            return List.of();
+        }
+
+        return queryFactory
+                .selectFrom(agency)
+                .distinct()
+                .where(
+                        agency.agencyType.eq(GENERAL)
+                                .and(agency.agencyName.containsIgnoreCase(keyword))
+                                .or(
+                                        eqUniversityName(university)
+                                                .and(agency.agencyName.containsIgnoreCase(keyword))
+                                )
+                )
+                .fetch();
+    }
+
 
     private JPAQuery<Agency> getCountQuery(String universityName) {
         return queryFactory.selectFrom(agency)
