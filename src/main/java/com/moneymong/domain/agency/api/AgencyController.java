@@ -47,6 +47,12 @@ public class AgencyController {
         return agencyService.getAgencyList(user.getId(), pageable);
     }
 
+    @Operation(summary = "소속 목록 검색")
+    @GetMapping("/search")
+    public List<AgencyResponse> searchAgencyList(@RequestParam("keyword") String keyword, @AuthenticationPrincipal JwtAuthentication user) {
+        return agencyService.search(user.getId(), keyword);
+    }
+
     @Operation(summary = "소속 내 멤버 목록 조회")
     @GetMapping("/{agencyId}/agency-users")
     public AgencyUserResponses getAgencyUserList(

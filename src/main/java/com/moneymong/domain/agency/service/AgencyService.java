@@ -91,6 +91,16 @@ public class AgencyService {
         return new CreateAgencyResponse(agency.getId());
     }
 
+    @Transactional
+    public List<AgencyResponse> search(Long userId, String keyword) {
+        String university = getUniversityName(userId);
+        List<Agency> agencies = agencyRepository.findByKeyword(university, keyword);
+
+        return agencies.stream()
+                .map(AgencyResponse::from)
+                .toList();
+    }
+
     private String getUniversityName(Long userId) {
         return userUniversityRepository.findByUserId(userId)
             .map(UserUniversity::getUniversityName)
