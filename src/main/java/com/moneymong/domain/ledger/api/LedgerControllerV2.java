@@ -2,8 +2,10 @@ package com.moneymong.domain.ledger.api;
 
 import com.moneymong.domain.ledger.api.request.*;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
+import com.moneymong.domain.ledger.api.response.LedgerDetailInfoViewV2;
 import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoViewV2;
 import com.moneymong.domain.ledger.service.manager.LedgerDetailService;
+import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.ledger.service.reader.LedgerReader;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,8 +21,23 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class LedgerControllerV2 {
+    private final LedgerService ledgerService;
     private final LedgerReader ledgerReader;
     private final LedgerDetailService ledgerDetailService;
+
+    @Operation(summary = "장부 내역 등록 API V2")
+    @PostMapping("/{id}")
+    public LedgerDetailInfoViewV2 createLedger(
+            @AuthenticationPrincipal JwtAuthentication user,
+            @PathVariable("id") final Long ledgerId,
+            @RequestBody @Valid final CreateLedgerRequestV2 request
+    ) {
+        return ledgerService.createLedgerV2(
+                user.getId(),
+                ledgerId,
+                request
+        );
+    }
 
     @Operation(summary = " 장부 내역 조회 API")
     @GetMapping("/{id}")
