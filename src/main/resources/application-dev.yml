@@ -24,6 +24,7 @@ spring:
     redis:
       host: redis
       port: 6379
+      password: ${REDIS_PASSWORD}
 
 # db 설정
 datasource:
