@@ -4,8 +4,10 @@ import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.ledger.api.request.CreateLedgerRequest;
+import com.moneymong.domain.ledger.api.request.CreateLedgerRequestV2;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
+import com.moneymong.domain.ledger.api.response.LedgerDetailInfoViewV2;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.LedgerDocument;
@@ -34,6 +36,53 @@ public class LedgerService {
     private final AgencyUserRepository agencyUserRepository;
     private final LedgerRepository ledgerRepository;
     private final LedgerDetailRepository ledgerDetailRepository;
+
+    @Transactional
+    public LedgerDetailInfoViewV2 createLedgerV2(
+            final Long userId,
+            final Long ledgerId,
+            final CreateLedgerRequestV2 request
+    ) {
+        // === 유저 ===
+        User user = getUser(userId);
+
+        Ledger ledger = getLedger(ledgerId);
+
+        // === 소속 ===
+        AgencyUser agencyUser = getAgencyUser(userId, ledger);
+
+        // === 권한 ===
+        validateStaffUserRole(agencyUser.getAgencyUserRole());
+
+        // 장부 내역 등록
+        LedgerDetail ledgerDetail = ledgerDetailService.createLedgerDetail(
+                ledger,
+                user,
+                request.getStoreInfo(),
+                request.getFundType(),
+                request.getAmount(),
+                ledger.getTotalBalance(),
+                request.getDescription(),
+                request.getPaymentDate()
+        );
+
+        // 장부 증빙 자료 등록
+        List<LedgerDocument> ledgerDocuments = List.of();
+        List<String> requestDocumentImageUrls = request.getDocumentImageUrls();
+
+        if (!requestDocumentImageUrls.isEmpty()) {
+            ledgerDocuments = ledgerDocumentManager.createLedgerDocuments(
+                    ledgerDetail.getId(),
+                    requestDocumentImageUrls
+            );
+        }
+
+        return LedgerDetailInfoViewV2.of(
+                ledgerDetail,
+                ledgerDocuments,
+                user
+        );
+    }
 
     @Transactional
     public LedgerDetailInfoView createLedger(
