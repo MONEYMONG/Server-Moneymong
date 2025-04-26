@@ -21,6 +21,7 @@ services:
       KAKAO_ADMIN_KEY: ${KAKAO_ADMIN_KEY}
       INVITATION_CODE_KEY: ${INVITATION_CODE_KEY}
       APP_MINIMUM_VERSION: ${APP_MINIMUM_VERSION}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     volumes:
       - ./logfile:/logs
 
