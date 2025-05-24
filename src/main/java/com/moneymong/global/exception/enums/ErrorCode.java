@@ -54,6 +54,7 @@ public enum ErrorCode {
     // ---- 초대코드 ---- //
     INVITATION_CODE_NOT_FOUND(MoneymongConstant.NOT_FOUND, "INVITATION-001", "초대코드가 존재하지 않습니다."),
     INVITATION_CODE_NOT_CERTIFIED_USER(MoneymongConstant.FORBIDDEN, "INVITATION-002", "초대코드 미인증 유저입니다."),
+    INVITATION_AGENCY_NOT_FOUND(MoneymongConstant.NOT_FOUND, "INVITATION-003", "초대코드에 해당하는 소속이 존재하지 않습니다."),
 
     // ---- 네트워크 ---- //
     HTTP_CLIENT_REQUEST_FAILED(MoneymongConstant.INTERNAL_SERVER_ERROR, "NETWORK-001", "서버 요청에 실패하였습니다.");

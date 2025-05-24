@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface InvitationCodeRepository extends JpaRepository<InvitationCode, Long> {
     Optional<InvitationCode> findByAgencyId(Long agencyId);
+    Optional<InvitationCode> findByCode(String code);
 }
