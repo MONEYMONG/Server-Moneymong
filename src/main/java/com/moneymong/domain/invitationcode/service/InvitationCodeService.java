@@ -1,5 +1,6 @@
 package com.moneymong.domain.invitationcode.service;
 
+import com.moneymong.domain.agency.entity.Agency;
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
@@ -80,6 +81,18 @@ public class InvitationCodeService {
         return CertifyInvitationCodeResponse.from(certified);
     }
 
+    @Transactional
+    public CertifyInvitationCodeResponse certifyV2(CertifyInvitationCodeRequest request, Long userId) {
+        InvitationCode invitationCode = getInvitationCode(request.getInvitationCode());
+
+        InvitationCodeCertification certification = getCertification(userId, invitationCode.getAgencyId());
+        invitationCodeCertificationRepository.save(certification);
+
+        agencyUserService.join(invitationCode.getAgencyId(), userId);
+
+        return CertifyInvitationCodeResponse.from(true);
+    }
+
     private InvitationCodeCertification getCertification(Long userId, Long agencyId) {
         return invitationCodeCertificationRepository.findByUserIdAndAgencyId(userId, agencyId)
                 .orElseGet(() -> InvitationCodeCertification.of(userId, agencyId, CertificationStatus.DONE));
@@ -99,5 +112,10 @@ public class InvitationCodeService {
         if (!AgencyUserRole.isStaffUser(userRole)) {
             throw new InvalidAccessException(ErrorCode.INVALID_AGENCY_USER_ACCESS);
         }
+    }
+
+    private InvitationCode getInvitationCode(String code) {
+        return invitationCodeRepository.findByCode(code)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.INVITATION_AGENCY_NOT_FOUND));
     }
 }
