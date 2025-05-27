@@ -11,10 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CertifyInvitationCodeResponse {
     private boolean certified;
+    private long agencyId;
 
-    public static CertifyInvitationCodeResponse from(boolean certified) {
+    public static CertifyInvitationCodeResponse from(boolean certified, long agencyId) {
         return CertifyInvitationCodeResponse.builder()
                 .certified(certified)
+                .agencyId(agencyId)
                 .build();
     }
 }
