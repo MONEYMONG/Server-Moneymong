@@ -78,7 +78,7 @@ public class InvitationCodeService {
             agencyUserService.join(agencyId, userId);
         }
 
-        return CertifyInvitationCodeResponse.from(certified);
+        return CertifyInvitationCodeResponse.from(certified, agencyId);
     }
 
     @Transactional
@@ -90,7 +90,7 @@ public class InvitationCodeService {
 
         agencyUserService.join(invitationCode.getAgencyId(), userId);
 
-        return CertifyInvitationCodeResponse.from(true);
+        return CertifyInvitationCodeResponse.from(true, invitationCode.getAgencyId());
     }
 
     private InvitationCodeCertification getCertification(Long userId, Long agencyId) {
