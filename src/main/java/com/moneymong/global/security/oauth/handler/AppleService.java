@@ -95,8 +95,6 @@ public class AppleService implements OAuthAuthenticationHandler {
                     AppleUserData.class
             );
 
-            assert userData != null;
-
             String refreshToken = userData.getRefreshToken();
             String idToken = userData.getIdToken();
 
@@ -180,7 +178,8 @@ public class AppleService implements OAuthAuthenticationHandler {
             Map<String, Claim> claims = decoded.getClaims();
 
             String providerUid = decoded.getSubject();
-            String email = claims.get("email").asString();
+            Claim emailClaim = claims.get("email");
+            String email = (emailClaim == null || emailClaim.isMissing() || emailClaim.isNull()) ? null : emailClaim.asString();
 
             return OAuthUserDataResponse.builder()
                     .provider(getAuthProvider().toString())
