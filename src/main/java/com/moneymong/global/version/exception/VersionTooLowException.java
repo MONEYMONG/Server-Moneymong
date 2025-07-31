@@ -5,7 +5,7 @@ import com.moneymong.global.exception.enums.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
+@ResponseStatus(HttpStatus.UPGRADE_REQUIRED)
 public class VersionTooLowException extends BusinessException {
 
     public VersionTooLowException(ErrorCode errorCode) {
