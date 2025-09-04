@@ -24,6 +24,7 @@ public class LedgerDetailInfoView {
     private List<LedgerReceiptInfoView> receiptImageUrls;
     private List<LedgerDocumentInfoView> documentImageUrls;
     private String authorName;
+    private String category;
 
     public static LedgerDetailInfoView of(
             final LedgerDetail ledgerDetail,
@@ -54,6 +55,7 @@ public class LedgerDetailInfoView {
                                 .toList()
                 )
                 .authorName(user.getNickname())
+                .category("동아리")
                 .build();
     }
 }

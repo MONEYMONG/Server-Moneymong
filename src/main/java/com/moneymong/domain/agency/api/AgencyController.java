@@ -2,10 +2,14 @@ package com.moneymong.domain.agency.api;
 
 import com.moneymong.domain.agency.api.request.BlockAgencyUserRequest;
 import com.moneymong.domain.agency.api.request.CreateAgencyRequest;
+import com.moneymong.domain.agency.api.request.CreateCategoryRequest;
 import com.moneymong.domain.agency.api.request.UpdateAgencyUserRoleRequest;
 import com.moneymong.domain.agency.api.response.AgencyResponse;
 import com.moneymong.domain.agency.api.response.AgencyUserResponses;
+import com.moneymong.domain.agency.api.response.CategoryResponses;
 import com.moneymong.domain.agency.api.response.CreateAgencyResponse;
+import com.moneymong.domain.agency.api.response.CreateCategoryResponse;
+import com.moneymong.domain.agency.api.response.CategoryResponse;
 import com.moneymong.domain.agency.api.response.SearchAgencyResponse;
 import com.moneymong.domain.agency.service.AgencyService;
 import com.moneymong.domain.agency.service.AgencyUserService;
@@ -95,5 +99,16 @@ public class AgencyController {
         @PathVariable("agencyId") Long agencyId
         ) {
         agencyService.delete(user.getId(), agencyId);
+    }
+
+    @PostMapping("/categories")
+    public CreateCategoryResponse createCategory(CreateCategoryRequest request, @AuthenticationPrincipal JwtAuthentication user) {
+        return new CreateCategoryResponse(request.agencyId(), request.name());
+    }
+
+    @GetMapping("/categories")
+    public CategoryResponses getCategories(@RequestParam("agencyId") Long agencyId, @AuthenticationPrincipal JwtAuthentication user) {
+        return new CategoryResponses(agencyId,
+            List.of(new CategoryResponse("동아리"), new CategoryResponse("회식"), new CategoryResponse("스터디")));
     }
 }

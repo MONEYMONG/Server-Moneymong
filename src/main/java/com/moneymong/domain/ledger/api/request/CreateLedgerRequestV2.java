@@ -32,4 +32,6 @@ public class CreateLedgerRequestV2 {
 
     @Size(max = 12, message = "증빙 자료 12개 이하 입력해주세요.")
     private List<String> documentImageUrls;
+
+    private String category;
 }
