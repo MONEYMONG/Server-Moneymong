@@ -23,6 +23,7 @@ public class LedgerDetailInfoViewV2 {
     private ZonedDateTime paymentDate;
     private List<LedgerDocumentInfoView> documentImageUrls;
     private String authorName;
+    private String category;
 
     public static LedgerDetailInfoViewV2 of(
             final LedgerDetail ledgerDetail,
@@ -45,6 +46,7 @@ public class LedgerDetailInfoViewV2 {
                                 .toList()
                 )
                 .authorName(user.getNickname())
+                .category("동아리")
                 .build();
     }
 }

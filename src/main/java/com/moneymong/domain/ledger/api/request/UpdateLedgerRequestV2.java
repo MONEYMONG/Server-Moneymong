@@ -1,5 +1,6 @@
 package com.moneymong.domain.ledger.api.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -30,4 +31,6 @@ public class UpdateLedgerRequestV2 {
 
     @Size(max = 12, message = "증빙 자료 12개 이하 입력해주세요.")
     private List<String> documentImageUrls;
+
+    private String category;
 }
