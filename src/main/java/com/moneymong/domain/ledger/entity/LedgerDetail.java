@@ -1,5 +1,6 @@
 package com.moneymong.domain.ledger.entity;
 
+import com.moneymong.domain.category.entity.Category;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.global.domain.TimeBaseEntity;
@@ -62,6 +63,13 @@ public class LedgerDetail extends TimeBaseEntity {
     @Column(name = "payment_date")
     private ZonedDateTime paymentDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "category_id",
+            referencedColumnName = "id"
+    )
+    private Category category;
+
     public void update(
             final User user,
             final String storeInfo,
@@ -69,7 +77,8 @@ public class LedgerDetail extends TimeBaseEntity {
             final Integer amount,
             final Integer balance,
             final String description,
-            final ZonedDateTime paymentDate
+            final ZonedDateTime paymentDate,
+            final Category category
     ) {
         this.user = user;
         this.storeInfo = storeInfo;
@@ -78,6 +87,7 @@ public class LedgerDetail extends TimeBaseEntity {
         this.balance = balance;
         this.description = description;
         this.paymentDate = paymentDate;
+        this.category = category;
     }
 
     public void updateBalance(int balance) {
@@ -88,12 +98,14 @@ public class LedgerDetail extends TimeBaseEntity {
             String storeInfo,
             int amount,
             String description,
-            ZonedDateTime paymentDate
+            ZonedDateTime paymentDate,
+            Category category
     ) {
         this.storeInfo = storeInfo;
         this.amount = amount;
         this.description = description;
         this.paymentDate = paymentDate;
+        this.category = category;
     }
 
     public static LedgerDetail of(
@@ -104,7 +116,8 @@ public class LedgerDetail extends TimeBaseEntity {
             final Integer amount,
             final Integer balance,
             final String description,
-            final ZonedDateTime paymentDate
+            final ZonedDateTime paymentDate,
+            final Category category
     ) {
         return LedgerDetail
                 .builder()
@@ -116,6 +129,7 @@ public class LedgerDetail extends TimeBaseEntity {
                 .balance(balance)
                 .description(description)
                 .paymentDate(paymentDate)
+                .category(category)
                 .build();
     }
 }

@@ -104,7 +104,8 @@ public class LedgerDetailService {
                 updateLedgerRequest.getStoreInfo(),
                 updateLedgerRequest.getAmount(),
                 updateLedgerRequest.getDescription(),
-                updateLedgerRequest.getPaymentDate()
+                updateLedgerRequest.getPaymentDate(),
+                null // TODO: Add category support later
         );
 
         AgencyUser agencyUser = getAgencyUser(user, ledgerDetail);
@@ -153,7 +154,8 @@ public class LedgerDetailService {
                 updateLedgerRequest.getStoreInfo(),
                 updateLedgerRequest.getAmount(),
                 updateLedgerRequest.getDescription(),
-                updateLedgerRequest.getPaymentDate()
+                updateLedgerRequest.getPaymentDate(),
+                null // TODO: Add category support later
         );
 
         updateBalance(ledger);
