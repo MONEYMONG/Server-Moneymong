@@ -46,7 +46,7 @@ public class LedgerDetailInfoViewV2 {
                                 .toList()
                 )
                 .authorName(user.getNickname())
-                .category("동아리")
+                .category(ledgerDetail.getCategory() != null ? ledgerDetail.getCategory().getName() : null)
                 .build();
     }
 }

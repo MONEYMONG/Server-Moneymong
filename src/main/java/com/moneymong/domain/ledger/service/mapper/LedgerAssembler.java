@@ -32,7 +32,8 @@ public class LedgerAssembler {
                 amount,
                 balance,
                 description,
-                paymentDate
+                paymentDate,
+                null // TODO: Add category support later
         );
     }
 
