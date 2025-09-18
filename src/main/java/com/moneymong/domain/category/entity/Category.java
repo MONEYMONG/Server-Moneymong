@@ -30,12 +30,12 @@ public class Category extends TimeBaseEntity {
     private String name;
 
     @Column(nullable = false)
-    private Long ledgerId;
+    private Long agencyId;
 
-    public static Category of(String name, Long ledgerId) {
+    public static Category of(String name, Long agencyId) {
         return Category.builder()
                 .name(name)
-                .ledgerId(ledgerId)
+                .agencyId(agencyId)
                 .build();
     }
 }

@@ -13,6 +13,7 @@ import com.moneymong.domain.agency.api.response.CategoryResponse;
 import com.moneymong.domain.agency.api.response.SearchAgencyResponse;
 import com.moneymong.domain.agency.service.AgencyService;
 import com.moneymong.domain.agency.service.AgencyUserService;
+import com.moneymong.domain.category.service.CategoryService;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,6 +33,7 @@ public class AgencyController {
 
     private final AgencyService agencyService;
     private final AgencyUserService agencyUserService;
+    private final CategoryService categoryService;
 
     @Operation(summary = "소속 생성")
     @PostMapping
@@ -102,13 +104,19 @@ public class AgencyController {
     }
 
     @PostMapping("/categories")
-    public CreateCategoryResponse createCategory(CreateCategoryRequest request, @AuthenticationPrincipal JwtAuthentication user) {
-        return new CreateCategoryResponse(request.agencyId(), request.name());
+    public CreateCategoryResponse createCategory(@RequestBody CreateCategoryRequest request, @AuthenticationPrincipal JwtAuthentication user) {
+        var categoryResponse = categoryService.createCategory(request.name(), request.agencyId());
+        return new CreateCategoryResponse(categoryResponse.getAgencyId(), categoryResponse.getName());
     }
 
     @GetMapping("/categories")
     public CategoryResponses getCategories(@RequestParam("agencyId") Long agencyId, @AuthenticationPrincipal JwtAuthentication user) {
-        return new CategoryResponses(agencyId,
-            List.of(new CategoryResponse("동아리"), new CategoryResponse("회식"), new CategoryResponse("스터디")));
+        var categoryResponses = categoryService.getCategoriesByAgencyId(agencyId);
+        
+        List<CategoryResponse> agencyCategoryResponses = categoryResponses.stream()
+                .map(response -> new CategoryResponse(response.getName()))
+                .toList();
+        
+        return new CategoryResponses(agencyId, agencyCategoryResponses);
     }
 }
