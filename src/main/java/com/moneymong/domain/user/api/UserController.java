@@ -38,7 +38,10 @@ public class UserController {
     public UserProfileResponse getMyProfile(
             @AuthenticationPrincipal JwtAuthentication user
     ) {
-        return userService.getUserProfile(user.getId());
+        UserProfileResponse result = userService.getUserProfile(user.getId());
+
+        log.info("getMyProfile: {}", result);
+        return result;
     }
 
     @Operation(summary = "회원 탈퇴")

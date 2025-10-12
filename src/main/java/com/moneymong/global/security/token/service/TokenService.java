@@ -88,6 +88,8 @@ public class TokenService {
     }
 
     public JwtAuthenticationToken getAuthenticationByAccessToken(String accessToken) {
+        log.info("Test Access Token ={}", accessToken);
+
         jwtTokenProvider.validateToken(accessToken);
 
         Claims claims = jwtTokenProvider.getClaims(accessToken);
