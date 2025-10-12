@@ -4,6 +4,7 @@ import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.category.entity.Category;
+import com.moneymong.domain.category.repository.CategoryRepository;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequestV2;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
@@ -49,6 +50,7 @@ public class LedgerDetailService {
     private final LedgerDocumentRepository ledgerDocumentRepository;
     private final LedgerReceiptManager ledgerReceiptManager;
     private final LedgerDocumentManager ledgerDocumentManager;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public LedgerDetail createLedgerDetail(
@@ -153,12 +155,14 @@ public class LedgerDetailService {
 
         ledger.updateTotalBalance(-newAmount);
 
+        Category category = resolveCategory(updateLedgerRequest.getCategory(), ledger);
+
         ledgerDetail.updateLedgerDetailInfo(
                 updateLedgerRequest.getStoreInfo(),
                 updateLedgerRequest.getAmount(),
                 updateLedgerRequest.getDescription(),
                 updateLedgerRequest.getPaymentDate(),
-                null // TODO: Add category support later
+                category
         );
 
         updateBalance(ledger);
@@ -226,6 +230,14 @@ public class LedgerDetailService {
         return ledgerDetailRepository
                 .findById(detailId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
+    }
+
+    private Category resolveCategory(String categoryName, Ledger ledger) {
+        if (categoryName == null || categoryName.isEmpty()) {
+            return null;
+        }
+        return categoryRepository.findByAgencyIdAndName(ledger.getAgency().getId(), categoryName)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_CATEGORY_NOT_FOUND));
     }
 
     private User getUser(Long userId) {
