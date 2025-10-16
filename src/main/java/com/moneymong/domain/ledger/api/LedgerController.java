@@ -1,13 +1,16 @@
 package com.moneymong.domain.ledger.api;
 
 import com.moneymong.domain.ledger.api.request.CreateLedgerRequest;
+import com.moneymong.domain.ledger.api.request.LedgerReportRequest;
 import com.moneymong.domain.ledger.api.request.SearchLedgerFilterRequest;
 import com.moneymong.domain.ledger.api.request.SearchLedgerRequest;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
 import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoView;
+import com.moneymong.domain.ledger.api.response.report.LedgerReportResponse;
 import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.ledger.service.reader.LedgerReader;
+import com.moneymong.domain.ledger.service.reader.LedgerReportReader;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LedgerController {
     private final LedgerService ledgerService;
     private final LedgerReader ledgerReader;
+    private final LedgerReportReader ledgerReportReader;
 
     @Operation(summary = "장부 내역 등록 API")
     @PostMapping("/{id}")
@@ -117,5 +121,22 @@ public class LedgerController {
             @PathVariable("agencyId") final Long agencyId
     ) {
         return ledgerReader.exists(agencyId);
+    }
+
+    @Operation(summary = "장부 보고서 조회 API")
+    @GetMapping("/agencies/{agencyId}/reports")
+    public LedgerReportResponse getReport(
+            @AuthenticationPrincipal JwtAuthentication user,
+            @PathVariable("agencyId") final Long agencyId,
+            @ParameterObject @Valid final LedgerReportRequest request
+    ) {
+        return ledgerReportReader.getReport(
+                user.getId(),
+                agencyId,
+                request.getStartYear(),
+                request.getStartMonth(),
+                request.getEndYear(),
+                request.getEndMonth()
+        );
     }
 }

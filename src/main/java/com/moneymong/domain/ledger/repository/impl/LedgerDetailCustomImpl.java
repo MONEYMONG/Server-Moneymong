@@ -1,6 +1,9 @@
 package com.moneymong.domain.ledger.repository.impl;
 
 import static com.moneymong.domain.ledger.entity.QLedgerDetail.*;
+import static com.moneymong.domain.ledger.entity.QLedger.*;
+import static com.moneymong.domain.agency.entity.QAgency.*;
+import static com.moneymong.domain.user.entity.QUser.*;
 
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
@@ -138,5 +141,22 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
                 .orderBy(ledgerDetail.paymentDate.desc())
                 .limit(1)
                 .fetchOne());
+    }
+
+    @Override
+    public List<LedgerDetail> findAllByAgencyId(Long agencyId) {
+        return jpaQueryFactory
+                .selectFrom(ledgerDetail)
+                .join(ledgerDetail.ledger, ledger).fetchJoin()
+                .join(ledger.agency, agency).fetchJoin()
+                .join(ledgerDetail.user, user).fetchJoin()
+                .leftJoin(ledgerDetail.category).fetchJoin()
+                .where(
+                        agency.id.eq(agencyId),
+                        agency.deleted.eq(false),
+                        user.deleted.eq(false)
+                )
+                .orderBy(ledgerDetail.paymentDate.asc())
+                .fetch();
     }
 }
