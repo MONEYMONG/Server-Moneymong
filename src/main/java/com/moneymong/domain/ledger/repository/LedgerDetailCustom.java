@@ -49,4 +49,6 @@ public interface LedgerDetailCustom {
     );
 
     Optional<LedgerDetail> findMostRecentLedgerDetail(Ledger ledger, ZonedDateTime paymentDate);
+
+    List<LedgerDetail> findAllByAgencyId(Long agencyId);
 }
