@@ -3,6 +3,7 @@ package com.moneymong.domain.ledger.service.manager;
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
+import com.moneymong.domain.category.entity.Category;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequestV2;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
@@ -58,18 +59,20 @@ public class LedgerDetailService {
             final Integer amount,
             final Integer balance,
             final String description,
-            final ZonedDateTime paymentDate
+            final ZonedDateTime paymentDate,
+            final Category category
     ) {
 
         LedgerDetail ledgerDetail = ledgerAssembler.toLedgerDetailEntity(
-                ledger,
-                user,
-                storeInfo,
-                fundType,
-                amount,
-                balance,
-                description,
-                paymentDate
+            ledger,
+            user,
+            storeInfo,
+            fundType,
+            amount,
+            balance,
+            description,
+            paymentDate,
+            category
         );
 
         int newAmount = AmountCalculatorByFundType.calculate(fundType, amount);
