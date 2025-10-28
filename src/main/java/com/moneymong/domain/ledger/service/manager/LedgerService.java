@@ -3,6 +3,8 @@ package com.moneymong.domain.ledger.service.manager;
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
+import com.moneymong.domain.category.entity.Category;
+import com.moneymong.domain.category.repository.CategoryRepository;
 import com.moneymong.domain.ledger.api.request.CreateLedgerRequest;
 import com.moneymong.domain.ledger.api.request.CreateLedgerRequestV2;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
@@ -20,6 +22,7 @@ import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,6 +39,7 @@ public class LedgerService {
     private final AgencyUserRepository agencyUserRepository;
     private final LedgerRepository ledgerRepository;
     private final LedgerDetailRepository ledgerDetailRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public LedgerDetailInfoViewV2 createLedgerV2(
@@ -54,6 +58,10 @@ public class LedgerService {
         // === 권한 ===
         validateStaffUserRole(agencyUser.getAgencyUserRole());
 
+        Category category = categoryRepository.findByAgencyIdAndName(ledger.getAgency().getId(),
+                request.getCategory())
+            .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_CATEGORY_NOT_FOUND));
+
         // 장부 내역 등록
         LedgerDetail ledgerDetail = ledgerDetailService.createLedgerDetail(
                 ledger,
@@ -63,7 +71,8 @@ public class LedgerService {
                 request.getAmount(),
                 ledger.getTotalBalance(),
                 request.getDescription(),
-                request.getPaymentDate()
+                request.getPaymentDate(),
+                category
         );
 
         // 장부 증빙 자료 등록
@@ -103,14 +112,15 @@ public class LedgerService {
 
         // 장부 내역 등록
         LedgerDetail ledgerDetail = ledgerDetailService.createLedgerDetail(
-                ledger,
-                user,
-                createLedgerRequest.getStoreInfo(),
-                createLedgerRequest.getFundType(),
-                createLedgerRequest.getAmount(),
-                ledger.getTotalBalance(),
-                createLedgerRequest.getDescription(),
-                createLedgerRequest.getPaymentDate()
+            ledger,
+            user,
+            createLedgerRequest.getStoreInfo(),
+            createLedgerRequest.getFundType(),
+            createLedgerRequest.getAmount(),
+            ledger.getTotalBalance(),
+            createLedgerRequest.getDescription(),
+            createLedgerRequest.getPaymentDate(),
+            null
         );
 
         // 장부 영수증 등록

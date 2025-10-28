@@ -1,5 +1,6 @@
 package com.moneymong.domain.ledger.service.mapper;
 
+import com.moneymong.domain.category.entity.Category;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.LedgerDocument;
@@ -21,8 +22,8 @@ public class LedgerAssembler {
             final Integer amount,
             final Integer balance,
             final String description,
-            final ZonedDateTime paymentDate
-
+            final ZonedDateTime paymentDate,
+            final Category category
     ) {
         return LedgerDetail.of(
                 ledger,
@@ -33,7 +34,7 @@ public class LedgerAssembler {
                 balance,
                 description,
                 paymentDate,
-                null // TODO: Add category support later
+                category
         );
     }
 

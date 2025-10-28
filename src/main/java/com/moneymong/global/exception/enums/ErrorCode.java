@@ -36,6 +36,7 @@ public enum ErrorCode {
     LEDGER_RECEIPT_NOT_FOUND(MoneymongConstant.NOT_FOUND, "LEDGER-006", "장부 영수증 내역이 존재하지 않습니다."),
     LEDGER_DOCUMENT_NOT_FOUND(MoneymongConstant.NOT_FOUND, "LEDGER-007", "장부 증빙 자료 내역이 존재하지 않습니다."),
     LEDGER_AMOUNT_UNDERFLOW(MoneymongConstant.BAD_REQUEST,"LEDGER-008", "총 잔액은 최소 -999,999,999원까지 기록이 가능합니다."),
+    LEDGER_CATEGORY_NOT_FOUND(MoneymongConstant.NOT_FOUND, "LEDGER-009", "해당하는 카테고리가 존재하지 않습니다."),
 
     // ---- 이미지 ---- //
     IMAGE_NOT_EXISTS(MoneymongConstant.NOT_FOUND, "IMAGE-001", "이미지를 찾을 수 없습니다."),
