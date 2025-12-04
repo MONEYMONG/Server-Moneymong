@@ -3,6 +3,7 @@ package com.moneymong.domain.agency.api;
 import com.moneymong.domain.agency.api.request.BlockAgencyUserRequest;
 import com.moneymong.domain.agency.api.request.CreateAgencyRequest;
 import com.moneymong.domain.agency.api.request.CreateCategoryRequest;
+import com.moneymong.domain.agency.api.request.DeleteCategoryRequest;
 import com.moneymong.domain.agency.api.request.UpdateAgencyUserRoleRequest;
 import com.moneymong.domain.agency.api.response.AgencyResponse;
 import com.moneymong.domain.agency.api.response.AgencyUserResponses;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -114,9 +116,18 @@ public class AgencyController {
         var categoryResponses = categoryService.getCategoriesByAgencyId(agencyId);
         
         List<CategoryResponse> agencyCategoryResponses = categoryResponses.stream()
-                .map(response -> new CategoryResponse(response.getName()))
+                .map(response -> new CategoryResponse(response.getId(), response.getName()))
                 .toList();
         
         return new CategoryResponses(agencyId, agencyCategoryResponses);
+    }
+
+    @Operation(summary = "카테고리 삭제 API")
+    @DeleteMapping("/categories")
+    public void deleteCategory(
+            @RequestBody @Valid DeleteCategoryRequest request,
+            @AuthenticationPrincipal JwtAuthentication user
+    ) {
+        categoryService.deleteCategory(request.getCategoryId());
     }
 }
