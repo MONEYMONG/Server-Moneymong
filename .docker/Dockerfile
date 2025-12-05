@@ -1,4 +1,4 @@
-FROM openjdk:17-oracle
+FROM eclipse-temurin:17-jdk
 ARG JAR_FILE=build/libs/moneymong-0.0.1.jar
 ENV ACTIVE_PROFILE=${ACTIVE_PROFILE} \
 DB_URL=${DB_URL} \
