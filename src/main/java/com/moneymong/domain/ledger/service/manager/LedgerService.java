@@ -58,9 +58,12 @@ public class LedgerService {
         // === 권한 ===
         validateStaffUserRole(agencyUser.getAgencyUserRole());
 
-        Category category = categoryRepository.findByAgencyIdAndName(ledger.getAgency().getId(),
-                request.getCategory())
-            .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_CATEGORY_NOT_FOUND));
+        Category category = null;
+        if (request.getCategory() != null && !request.getCategory().isEmpty()) {
+            category = categoryRepository.findByAgencyIdAndName(ledger.getAgency().getId(),
+                    request.getCategory())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_CATEGORY_NOT_FOUND));
+        }
 
         // 장부 내역 등록
         LedgerDetail ledgerDetail = ledgerDetailService.createLedgerDetail(
