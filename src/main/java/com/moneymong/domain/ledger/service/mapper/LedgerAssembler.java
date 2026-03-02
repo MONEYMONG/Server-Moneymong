@@ -8,6 +8,7 @@ import com.moneymong.domain.ledger.entity.LedgerReceipt;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.user.entity.User;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +43,9 @@ public class LedgerAssembler {
             final LedgerDetail ledgerDetail,
             final List<String> receiptImageUrls
     ) {
+        if (receiptImageUrls == null) {
+            return Collections.emptyList();
+        }
         return receiptImageUrls
                 .stream()
                 .map(receiptImageUrl -> LedgerReceipt.of(ledgerDetail, receiptImageUrl))
@@ -52,6 +56,9 @@ public class LedgerAssembler {
             final LedgerDetail ledgerDetail,
             final List<String> documentImageUrls
     ) {
+        if (documentImageUrls == null) {
+            return Collections.emptyList();
+        }
         return documentImageUrls
                 .stream()
                 .map(documentImageUrl -> LedgerDocument.of(ledgerDetail, documentImageUrl))
