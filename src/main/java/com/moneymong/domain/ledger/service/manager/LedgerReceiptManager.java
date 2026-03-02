@@ -13,6 +13,7 @@ import com.moneymong.domain.user.repository.UserRepository;
 import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,10 @@ public class LedgerReceiptManager {
             final Long ledgerDetailId,
             final List<String> receiptImageUrls
     ) {
+        if (receiptImageUrls == null || receiptImageUrls.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         LedgerDetail ledgerDetail = ledgerDetailRepository
                 .findById(ledgerDetailId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_RECEIPT_NOT_FOUND));
