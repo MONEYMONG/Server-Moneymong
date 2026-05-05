@@ -50,15 +50,19 @@ public class LedgerReportReader {
         // 해당 agency의 모든 ledger details 조회
         List<LedgerDetail> allDetails = ledgerDetailRepository.findAllByAgencyId(agencyId);
 
+        // 장부 전체 기간 합계 (응답의 totalIncome/totalExpense/totalBalance, 비율 계산 분모)
+        int totalIncome = calculateTotalByFundType(allDetails, FundType.INCOME);
+        int totalExpense = calculateTotalByFundType(allDetails, FundType.EXPENSE);
+        int totalBalance = totalIncome - totalExpense;
+
         // 기간 필터링
         List<LedgerDetail> filteredDetails = filterByPeriod(allDetails, startYear, startMonth, endYear, endMonth);
 
-        // 총 수입/지출 계산
-        int totalIncome = calculateTotalByFundType(filteredDetails, FundType.INCOME);
-        int totalExpense = calculateTotalByFundType(filteredDetails, FundType.EXPENSE);
-        int totalBalance = totalIncome - totalExpense;
+        // 요청 기간 합계 (멤버별 share 계산용 - 기간 내 비율 의미 유지)
+        int periodIncome = calculateTotalByFundType(filteredDetails, FundType.INCOME);
+        int periodExpense = calculateTotalByFundType(filteredDetails, FundType.EXPENSE);
 
-        // 월별 집계
+        // 월별 집계 (share 분모: 장부 전체 기간 합계)
         List<MonthlyReport> monthlyReports = generateMonthlyReports(
                 filteredDetails,
                 startYear, startMonth,
@@ -67,11 +71,11 @@ public class LedgerReportReader {
                 totalExpense
         );
 
-        // 멤버별 집계
-        List<MemberReport> memberReports = generateMemberReports(filteredDetails, totalIncome, totalExpense);
+        // 멤버별 집계 (share 분모: 요청 기간 합계)
+        List<MemberReport> memberReports = generateMemberReports(filteredDetails, periodIncome, periodExpense);
 
-        // 카테고리별 집계
-        List<CategoryReport> categoryReports = generateCategoryReports(filteredDetails);
+        // 카테고리별 집계 (share 분모: 장부 전체 기간 합계)
+        List<CategoryReport> categoryReports = generateCategoryReports(filteredDetails, totalIncome, totalExpense);
 
         return LedgerReportResponse.builder()
                 .agencyId(agencyId)
@@ -219,8 +223,11 @@ public class LedgerReportReader {
                 .collect(Collectors.toList());
     }
 
-    private List<CategoryReport> generateCategoryReports(List<LedgerDetail> details) {
-        // 수입/지출 분리하여 처리
+    private List<CategoryReport> generateCategoryReports(
+            List<LedgerDetail> details,
+            int totalIncome,
+            int totalExpense
+    ) {
         Map<String, Integer> incomeByCategory = new HashMap<>();
         Map<String, Integer> expenseByCategory = new HashMap<>();
 
@@ -236,11 +243,6 @@ public class LedgerReportReader {
             }
         }
 
-        // 총 수입과 지출 계산
-        int totalIncome = incomeByCategory.values().stream().mapToInt(Integer::intValue).sum();
-        int totalExpense = expenseByCategory.values().stream().mapToInt(Integer::intValue).sum();
-
-        // 모든 카테고리 수집
         Set<String> allCategories = new HashSet<>();
         allCategories.addAll(incomeByCategory.keySet());
         allCategories.addAll(expenseByCategory.keySet());
@@ -250,21 +252,15 @@ public class LedgerReportReader {
                     int income = incomeByCategory.getOrDefault(categoryName, 0);
                     int expense = expenseByCategory.getOrDefault(categoryName, 0);
 
-                    // share는 수입이 있으면 전체 수입 대비, 지출이 있으면 전체 지출 대비
-                    double share;
-                    if (income > 0 && totalIncome > 0) {
-                        share = (double) income / totalIncome;
-                    } else if (expense > 0 && totalExpense > 0) {
-                        share = (double) expense / totalExpense;
-                    } else {
-                        share = 0.0;
-                    }
+                    double incomeShare = totalIncome > 0 ? (double) income / totalIncome : 0.0;
+                    double expenseShare = totalExpense > 0 ? (double) expense / totalExpense : 0.0;
 
                     return CategoryReport.builder()
                             .name(categoryName)
                             .income(income)
                             .expense(expense)
-                            .share(share)
+                            .incomeShare(incomeShare)
+                            .expenseShare(expenseShare)
                             .build();
                 })
                 .sorted(Comparator.comparing(CategoryReport::name))
