@@ -54,7 +54,8 @@ public record LedgerReportResponse(
             String name,
             Integer income,
             Integer expense,
-            Double share
+            Double incomeShare,
+            Double expenseShare
     ) {
     }
 }
