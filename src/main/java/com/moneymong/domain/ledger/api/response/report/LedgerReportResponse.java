@@ -13,9 +13,7 @@ public record LedgerReportResponse(
         Integer totalIncome,
         Integer totalExpense,
         Integer totalBalance,
-        List<MonthlyReport> monthly,
-        List<MemberReport> members,
-        List<CategoryReport> categories
+        List<MonthlyReport> monthly
 ) {
     @Builder
     public record PeriodInfo(
@@ -34,7 +32,9 @@ public record LedgerReportResponse(
             Integer expense,
             Integer netAmount,
             Double incomeShareOfPeriod,
-            Double expenseShareOfPeriod
+            Double expenseShareOfPeriod,
+            List<MemberReport> members,
+            List<CategoryReport> categories
     ) {
     }
 
