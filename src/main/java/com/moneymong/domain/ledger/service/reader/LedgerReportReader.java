@@ -58,11 +58,7 @@ public class LedgerReportReader {
         // 기간 필터링
         List<LedgerDetail> filteredDetails = filterByPeriod(allDetails, startYear, startMonth, endYear, endMonth);
 
-        // 요청 기간 합계 (멤버별 share 계산용 - 기간 내 비율 의미 유지)
-        int periodIncome = calculateTotalByFundType(filteredDetails, FundType.INCOME);
-        int periodExpense = calculateTotalByFundType(filteredDetails, FundType.EXPENSE);
-
-        // 월별 집계 (share 분모: 장부 전체 기간 합계)
+        // 월별 집계 (각 month 안에 members/categories 포함)
         List<MonthlyReport> monthlyReports = generateMonthlyReports(
                 filteredDetails,
                 startYear, startMonth,
@@ -70,12 +66,6 @@ public class LedgerReportReader {
                 totalIncome,
                 totalExpense
         );
-
-        // 멤버별 집계 (share 분모: 요청 기간 합계)
-        List<MemberReport> memberReports = generateMemberReports(filteredDetails, periodIncome, periodExpense);
-
-        // 카테고리별 집계 (share 분모: 장부 전체 기간 합계)
-        List<CategoryReport> categoryReports = generateCategoryReports(filteredDetails, totalIncome, totalExpense);
 
         return LedgerReportResponse.builder()
                 .agencyId(agencyId)
@@ -90,8 +80,6 @@ public class LedgerReportReader {
                 .totalExpense(totalExpense)
                 .totalBalance(totalBalance)
                 .monthly(monthlyReports)
-                .members(memberReports)
-                .categories(categoryReports)
                 .build();
     }
 
@@ -172,6 +160,10 @@ public class LedgerReportReader {
             double incomeShare = totalIncome > 0 ? (double) monthIncome / totalIncome : 0.0;
             double expenseShare = totalExpense > 0 ? (double) monthExpense / totalExpense : 0.0;
 
+            // 월별 멤버/카테고리 집계 (share 분모: 해당 월 합계)
+            List<MemberReport> monthMembers = generateMemberReports(monthDetails, monthIncome, monthExpense);
+            List<CategoryReport> monthCategories = generateCategoryReports(monthDetails, monthIncome, monthExpense);
+
             reports.add(MonthlyReport.builder()
                     .year(year)
                     .month(month)
@@ -180,6 +172,8 @@ public class LedgerReportReader {
                     .netAmount(netAmount)
                     .incomeShareOfPeriod(incomeShare)
                     .expenseShareOfPeriod(expenseShare)
+                    .members(monthMembers)
+                    .categories(monthCategories)
                     .build());
 
             current = current.plusMonths(1);
