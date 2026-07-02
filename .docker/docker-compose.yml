@@ -24,6 +24,27 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     volumes:
       - ./logfile:/logs
+    depends_on:
+      - mysql
+    restart: always
+
+  mysql:
+    container_name: moneymong-db
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: moneymong
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: always
 
   redis:
     container_name: moneymong-redis
