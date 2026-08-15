@@ -65,3 +65,7 @@ jwt:
   expiry-seconds:
     access-token: 1800
     refresh-token: 1209600
+
+# deep link
+applink:
+  assetlinks-file: well-known/assetlinks-dev.json
