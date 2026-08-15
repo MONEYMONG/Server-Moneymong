@@ -1,0 +1,17 @@
+{
+    "applinks": {
+        "details": [
+            {
+                "appIDs": [
+                    "H5G7RFWFSQ.com.yapp.moneymong"
+                ],
+                "components": [
+                    {
+                        "/": "/invite",
+                        "?": "code=*"
+                    }
+                ]
+            }
+        ]
+    }
+}

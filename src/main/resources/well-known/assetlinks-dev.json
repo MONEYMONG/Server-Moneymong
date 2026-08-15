@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.moneymong.moneymong.tb",
+      "sha256_cert_fingerprints": [
+        "52:C3:76:61:3B:9C:10:AE:D1:68:60:86:10:70:B7:67:98:7C:F2:63:35:8F:D3:9A:78:5B:E7:7A:1D:47:BB:74"
+      ]
+    }
+  }
+]
