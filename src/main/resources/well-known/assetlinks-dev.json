@@ -7,7 +7,9 @@
       "namespace": "android_app",
       "package_name": "com.moneymong.moneymong.tb",
       "sha256_cert_fingerprints": [
-        "52:C3:76:61:3B:9C:10:AE:D1:68:60:86:10:70:B7:67:98:7C:F2:63:35:8F:D3:9A:78:5B:E7:7A:1D:47:BB:74"
+        "52:C3:76:61:3B:9C:10:AE:D1:68:60:86:10:70:B7:67:98:7C:F2:63:35:8F:D3:9A:78:5B:E7:7A:1D:47:BB:74",
+        "67:2B:67:7E:0C:6D:57:EF:C9:2B:9E:D2:27:87:FF:13:C7:75:1A:6F:4F:EA:53:51:12:CD:7C:2F:01:34:65:9B",
+        "72:C7:84:F4:10:AA:95:20:F9:F3:8D:70:2A:76:D1:C0:62:80:BB:5E:43:56:43:7F:AF:1E:F9:5B:30:BE:1D:95"
       ]
     }
   }
