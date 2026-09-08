@@ -60,7 +60,8 @@ public class SecurityConfig {
                             "/webjars/**",
                             "/swagger/**",
                             "/favicon.ico",
-                            "/.well-known/**"
+                            "/.well-known/**",
+                            "/invite"
                     );
         };
     }
