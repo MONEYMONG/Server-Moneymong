@@ -66,6 +66,7 @@ jobs:
           host: ${{ secrets.AWS_DEV_IP }}
           password: ${{ secrets.AWS_DEV_PASSWORD }}
           script: |
+            set -e
             cp /root/.docker/docker-compose.yml /root
             cd /root
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
