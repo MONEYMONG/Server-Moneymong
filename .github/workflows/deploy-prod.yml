@@ -66,6 +66,7 @@ jobs:
           host: ${{ secrets.AWS_PROD_IP }}
           key: ${{ secrets.AWS_PROD_PASSWORD }}
           script: |
+            set -e
             sudo cp /home/ubuntu/.docker/docker-compose.yml /home/ubuntu
             cd /home/ubuntu
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
