@@ -83,9 +83,9 @@ public class InviteLinkController {
             return appLaunchPage(target, ios);
         }
 
-        // 인앱 브라우저를 빠져나왔는데도 앱이 열리지 않은 경우. 직접 실행할 수단을 준다.
+        // 인앱 브라우저를 빠져나왔는데도 앱이 열리지 않은 경우. 초대 코드를 직접 입력할 수 있게 안내한다.
         if (ESCAPED_VALUE.equals(from)) {
-            return appLaunchPage(inviteUrl(code, agencyId), ios);
+            return fallbackPage(code, ios);
         }
 
         return redirectToStore(ios);
@@ -141,6 +141,19 @@ public class InviteLinkController {
                 .build();
     }
 
+    /**
+     * 외부 브라우저까지 왔는데 앱이 열리지 않은 상태다. 여기서 앱을 여는 링크는 넣지 않는다.
+     * iOS는 같은 도메인의 유니버설 링크로는 앱을 열지 않고, 스크립트로 넘기는 이동은
+     * 사용자 조작으로 보지 않아 역시 앱이 열리지 않는다. 남은 수단은 초대 코드 직접 입력이다.
+     */
+    private ResponseEntity<String> fallbackPage(String code, boolean ios) {
+        String storeUrl = (ios ? appStoreUri : playStoreUri).toString();
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .cacheControl(CacheControl.noStore())
+                .body(renderFallbackPage(code, storeUrl));
+    }
+
     private ResponseEntity<String> appLaunchPage(String target, boolean ios) {
         String storeUrl = (ios ? appStoreUri : playStoreUri).toString();
         return ResponseEntity.ok()
@@ -182,6 +195,35 @@ public class InviteLinkController {
                 </body>
                 </html>
                 """.formatted(hrefTarget, HtmlUtils.htmlEscape(storeUrl), scriptTarget);
+    }
+
+    private String renderFallbackPage(String code, String storeUrl) {
+        return """
+                <!doctype html>
+                <html lang="ko">
+                <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <title>머니몽 초대</title>
+                <style>
+                body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+                       display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #fff; }
+                main { text-align: center; padding: 24px; }
+                p { color: #555; font-size: 15px; margin: 0 0 16px; }
+                .code { font-size: 32px; font-weight: 700; letter-spacing: 4px; color: #111; margin-bottom: 24px; }
+                a { display: block; padding: 14px 20px; border-radius: 10px; text-decoration: none;
+                    font-size: 16px; background: #3B82F6; color: #fff; font-weight: 600; }
+                </style>
+                </head>
+                <body>
+                <main>
+                <p>머니몽 앱에서 아래 초대 코드를 입력해주세요.</p>
+                <div class="code">%s</div>
+                <a href="%s">앱 설치하기</a>
+                </main>
+                </body>
+                </html>
+                """.formatted(HtmlUtils.htmlEscape(code), HtmlUtils.htmlEscape(storeUrl));
     }
 
     private boolean isValidCode(String code) {
