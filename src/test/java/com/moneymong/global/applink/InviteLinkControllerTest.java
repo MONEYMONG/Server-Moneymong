@@ -60,14 +60,20 @@ class InviteLinkControllerTest {
     }
 
     @Test
-    @DisplayName("인앱 브라우저를 빠져나왔는데 앱이 열리지 않은 경우 스토어로 보내지 않고 재시도 페이지를 준다.")
+    @DisplayName("인앱 브라우저를 빠져나왔는데 앱이 열리지 않으면 초대 코드 입력을 안내한다.")
     void escapedButAppNotOpened() throws Exception {
-        mockMvc.perform(get("/invite")
-                        .param("code", "ABC123")
+        String body = mockMvc.perform(get("/invite")
+                        .param("code", "123456")
                         .param("from", "kakao")
                         .header(HttpHeaders.USER_AGENT, IOS_UA))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("https://" + INVITE_HOST + "/invite?code=ABC123")));
+                .andReturn().getResponse().getContentAsString();
+
+        org.assertj.core.api.Assertions.assertThat(body).contains("123456");
+        org.assertj.core.api.Assertions.assertThat(body).contains(APP_STORE_URL);
+        // 같은 도메인 유니버설 링크와 스크립트 이동은 앱을 열지 못하므로 넣지 않는다.
+        org.assertj.core.api.Assertions.assertThat(body).doesNotContain("location.href");
+        org.assertj.core.api.Assertions.assertThat(body).doesNotContain("/invite?code=");
     }
 
     @Test
