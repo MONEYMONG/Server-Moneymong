@@ -71,6 +71,54 @@ class InviteLinkControllerTest {
     }
 
     @Test
+    @DisplayName("소속 식별자는 iOS/Android 두 이름으로 함께 전달된다.")
+    void agencyIdIsCarriedWithBothNames() throws Exception {
+        // iOS가 만든 링크(agencyID)로 들어온 경우
+        mockMvc.perform(get("/invite")
+                        .param("code", "123456")
+                        .param("agencyID", "77")
+                        .header(HttpHeaders.USER_AGENT, KAKAO_ANDROID_UA))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("agencyId=77")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("agencyID=77")));
+
+        // Android가 만든 링크(agencyId)로 들어온 경우
+        mockMvc.perform(get("/invite")
+                        .param("code", "123456")
+                        .param("agencyId", "77")
+                        .header(HttpHeaders.USER_AGENT, KAKAO_IOS_UA))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("agencyId%3D77")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("agencyID%3D77")));
+    }
+
+    @Test
+    @DisplayName("script 안의 URL은 HTML escape되지 않고, href 속성은 escape된다.")
+    void escapingDiffersBetweenHrefAndScript() throws Exception {
+        String body = mockMvc.perform(get("/invite")
+                        .param("code", "123456")
+                        .param("agencyId", "77")
+                        .header(HttpHeaders.USER_AGENT, KAKAO_ANDROID_UA))
+                .andReturn().getResponse().getContentAsString();
+
+        String script = body.substring(body.indexOf("<script>"));
+        org.assertj.core.api.Assertions.assertThat(script).doesNotContain("&amp;");
+        String href = body.substring(body.indexOf("class=\"primary\""), body.indexOf("<script>"));
+        org.assertj.core.api.Assertions.assertThat(href).contains("&amp;");
+    }
+
+    @Test
+    @DisplayName("소속 식별자가 양의 정수가 아니면 붙이지 않는다.")
+    void invalidAgencyIdIsDropped() throws Exception {
+        mockMvc.perform(get("/invite")
+                        .param("code", "123456")
+                        .param("agencyId", "0")
+                        .header(HttpHeaders.USER_AGENT, KAKAO_ANDROID_UA))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("agencyId=0"))));
+    }
+
+    @Test
     @DisplayName("초대 코드가 없거나 영숫자 형식이 아니면 스토어로 리다이렉트된다.")
     void invalidCode() throws Exception {
         mockMvc.perform(get("/invite").header(HttpHeaders.USER_AGENT, KAKAO_IOS_UA))
