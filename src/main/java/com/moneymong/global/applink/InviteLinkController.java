@@ -25,6 +25,14 @@ public class InviteLinkController {
     private static final Pattern CODE_PATTERN = Pattern.compile("^[A-Za-z0-9]{1,32}$");
 
     /**
+     * 클라이언트가 초대 링크에 붙이는 소속 식별자. iOS는 agencyID, Android는 agencyId로 이름이 다르다.
+     * 앱이 둘 중 자기가 아는 이름만 읽으므로 서버는 두 이름을 모두 붙여서 넘긴다.
+     */
+    private static final Pattern AGENCY_ID_PATTERN = Pattern.compile("^[1-9][0-9]{0,18}$");
+    private static final String AGENCY_ID_IOS = "agencyID";
+    private static final String AGENCY_ID_ANDROID = "agencyId";
+
+    /**
      * 카카오톡 인앱 브라우저를 한 번 빠져나온 요청임을 표시한다.
      * 이 표시가 있으면 스토어로 보내지 않고 앱 실행을 다시 시도할 수 있는 페이지를 준다.
      */
@@ -59,21 +67,25 @@ public class InviteLinkController {
     @GetMapping("/invite")
     public ResponseEntity<String> invite(
             @RequestParam(value = "code", required = false) String code,
+            @RequestParam(value = AGENCY_ID_IOS, required = false) String agencyIdFromIos,
+            @RequestParam(value = AGENCY_ID_ANDROID, required = false) String agencyIdFromAndroid,
             @RequestParam(value = ESCAPED_PARAM, required = false) String from,
             @RequestHeader(value = HttpHeaders.USER_AGENT, required = false) String userAgent
     ) {
         boolean ios = isIos(userAgent);
+        String agencyId = firstValidAgencyId(agencyIdFromIos, agencyIdFromAndroid);
         if (!isValidCode(code)) {
             return redirectToStore(ios);
         }
 
         if (isKakaoTalk(userAgent)) {
-            return appLaunchPage(ios ? externalBrowserUri(code) : androidIntentUri(code), ios);
+            String target = ios ? externalBrowserUri(code, agencyId) : androidIntentUri(code, agencyId);
+            return appLaunchPage(target, ios);
         }
 
         // 인앱 브라우저를 빠져나왔는데도 앱이 열리지 않은 경우. 직접 실행할 수단을 준다.
         if (ESCAPED_VALUE.equals(from)) {
-            return appLaunchPage(inviteUrl(code), ios);
+            return appLaunchPage(inviteUrl(code, agencyId), ios);
         }
 
         return redirectToStore(ios);
@@ -83,23 +95,44 @@ public class InviteLinkController {
      * 카카오톡 인앱 브라우저에서 외부 브라우저로 초대 링크를 넘긴다.
      * iOS가 유니버설 링크를 가로채 앱을 실행하고, 앱이 없으면 Safari가 링크를 연다.
      */
-    private String externalBrowserUri(String code) {
-        String target = inviteUrl(code) + "&" + ESCAPED_PARAM + "=" + ESCAPED_VALUE;
+    private String externalBrowserUri(String code, String agencyId) {
+        String target = inviteUrl(code, agencyId) + "&" + ESCAPED_PARAM + "=" + ESCAPED_VALUE;
         return "kakaotalk://web/openExternal?url=" + encode(target);
     }
 
     /**
      * 앱이 없으면 browser_fallback_url로 플레이스토어가 열리므로 설치 여부를 서버가 판단하지 않는다.
      */
-    private String androidIntentUri(String code) {
-        return "intent://" + inviteHost + "/invite?code=" + code
+    private String androidIntentUri(String code, String agencyId) {
+        return "intent://" + inviteHost + "/invite" + query(code, agencyId)
                 + "#Intent;scheme=https;package=" + androidPackage
                 + ";S.browser_fallback_url=" + encode(playStoreUri.toString())
                 + ";end";
     }
 
-    private String inviteUrl(String code) {
-        return "https://" + inviteHost + "/invite?code=" + code;
+    private String inviteUrl(String code, String agencyId) {
+        return "https://" + inviteHost + "/invite" + query(code, agencyId);
+    }
+
+    /**
+     * 앱이 딥링크를 받아들이려면 code와 소속 식별자가 모두 있어야 한다. 식별자는 두 이름으로 함께 넘긴다.
+     */
+    private String query(String code, String agencyId) {
+        StringBuilder query = new StringBuilder("?code=").append(code);
+        if (agencyId != null) {
+            query.append("&").append(AGENCY_ID_ANDROID).append("=").append(agencyId)
+                    .append("&").append(AGENCY_ID_IOS).append("=").append(agencyId);
+        }
+        return query.toString();
+    }
+
+    private String firstValidAgencyId(String... candidates) {
+        for (String candidate : candidates) {
+            if (candidate != null && AGENCY_ID_PATTERN.matcher(candidate).matches()) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     private ResponseEntity<String> redirectToStore(boolean ios) {
@@ -117,7 +150,9 @@ public class InviteLinkController {
     }
 
     private String renderPage(String target, String storeUrl) {
-        String escapedTarget = HtmlUtils.htmlEscape(target);
+        // href는 HTML escape가 필요하고(&가 &amp;로), script 안에서는 escape하면 URL이 깨진다.
+        String hrefTarget = HtmlUtils.htmlEscape(target);
+        String scriptTarget = target.replace("\\", "\\\\").replace("\"", "\\\"").replace("</", "<\\/");
         return """
                 <!doctype html>
                 <html lang="ko">
@@ -146,7 +181,7 @@ public class InviteLinkController {
                 </script>
                 </body>
                 </html>
-                """.formatted(escapedTarget, HtmlUtils.htmlEscape(storeUrl), escapedTarget);
+                """.formatted(hrefTarget, HtmlUtils.htmlEscape(storeUrl), scriptTarget);
     }
 
     private boolean isValidCode(String code) {
