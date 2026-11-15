@@ -73,12 +73,8 @@ public class UserService {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-		log.info("User profile: {}", user);
-
 		UserUniversity userUniversity = userUniversityRepository.findByUserId(userId)
 				.orElseGet(UserUniversity::new);
-
-		log.info("User university: {}", userUniversity.getUniversityName());
 
 		return UserProfileResponse.from(user, userUniversity);
 	}

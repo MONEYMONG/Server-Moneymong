@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @RestController
-@Slf4j
 public class UserController {
 
     private final UserFacadeService userFacadeService;
@@ -29,7 +27,6 @@ public class UserController {
     public LoginSuccessResponse login(
             @RequestBody @Valid LoginRequest loginRequest
     ) {
-        log.info("login request: {}", loginRequest);
         return userFacadeService.login(loginRequest);
     }
 
@@ -38,10 +35,7 @@ public class UserController {
     public UserProfileResponse getMyProfile(
             @AuthenticationPrincipal JwtAuthentication user
     ) {
-        UserProfileResponse result = userService.getUserProfile(user.getId());
-
-        log.info("getMyProfile: {}", result);
-        return result;
+        return userService.getUserProfile(user.getId());
     }
 
     @Operation(summary = "회원 탈퇴")
