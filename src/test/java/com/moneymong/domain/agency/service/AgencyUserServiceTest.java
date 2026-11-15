@@ -7,8 +7,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
-import com.moneymong.domain.agency.api.request.BlockAgencyUserRequest;
-import com.moneymong.domain.agency.api.request.UpdateAgencyUserRoleRequest;
+import com.moneymong.domain.agency.service.dto.request.BlockAgencyUserRequest;
+import com.moneymong.domain.agency.service.dto.request.UpdateAgencyUserRoleRequest;
 import com.moneymong.domain.agency.entity.Agency;
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyType;

@@ -8,12 +8,12 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.never;
 
-import com.moneymong.domain.agency.api.request.CreateAgencyRequest;
-import com.moneymong.domain.agency.api.response.AgencyResponse;
-import com.moneymong.domain.agency.api.response.AgencyUserResponse;
-import com.moneymong.domain.agency.api.response.AgencyUserResponses;
-import com.moneymong.domain.agency.api.response.CreateAgencyResponse;
-import com.moneymong.domain.agency.api.response.SearchAgencyResponse;
+import com.moneymong.domain.agency.service.dto.request.CreateAgencyRequest;
+import com.moneymong.domain.agency.service.dto.response.AgencyResponse;
+import com.moneymong.domain.agency.repository.dto.AgencyUserResponse;
+import com.moneymong.domain.agency.service.dto.response.AgencyUserResponses;
+import com.moneymong.domain.agency.service.dto.response.CreateAgencyResponse;
+import com.moneymong.domain.agency.service.dto.response.SearchAgencyResponse;
 import com.moneymong.domain.agency.entity.Agency;
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyType;

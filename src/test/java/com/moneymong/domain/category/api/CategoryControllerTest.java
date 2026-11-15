@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.moneymong.domain.category.api.response.CategoryResponse;
+import com.moneymong.domain.category.service.dto.response.CategoryResponse;
 import com.moneymong.domain.category.service.CategoryService;
 import com.moneymong.support.ControllerTestSupport;
 import java.util.List;

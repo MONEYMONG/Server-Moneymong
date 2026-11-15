@@ -12,14 +12,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.moneymong.domain.ledger.api.request.CreateLedgerRequest;
-import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
-import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
-import com.moneymong.domain.ledger.api.response.LedgerDocumentInfoView;
-import com.moneymong.domain.ledger.api.response.LedgerReceiptInfoView;
-import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoView;
-import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoViewDetail;
-import com.moneymong.domain.ledger.api.response.report.LedgerReportResponse;
+import com.moneymong.domain.ledger.service.dto.request.CreateLedgerRequest;
+import com.moneymong.domain.ledger.service.dto.request.UpdateLedgerRequest;
+import com.moneymong.domain.ledger.service.dto.response.LedgerDetailInfoView;
+import com.moneymong.domain.ledger.service.dto.response.LedgerDocumentInfoView;
+import com.moneymong.domain.ledger.service.dto.response.LedgerReceiptInfoView;
+import com.moneymong.domain.ledger.service.dto.response.ledger.LedgerInfoView;
+import com.moneymong.domain.ledger.service.dto.response.ledger.LedgerInfoViewDetail;
+import com.moneymong.domain.ledger.service.dto.response.report.LedgerReportResponse;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.ledger.service.reader.LedgerReader;

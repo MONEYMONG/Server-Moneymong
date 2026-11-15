@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.global.security.token.api.request.DeleteRefreshTokenRequest;
 import com.moneymong.global.security.token.api.request.RefreshAccessTokenRequest;
-import com.moneymong.global.security.token.api.response.TokenResponse;
+import com.moneymong.global.security.token.service.dto.response.TokenResponse;
 import com.moneymong.global.security.token.exception.ExpiredTokenException;
 import com.moneymong.global.security.token.exception.RefreshTokenNotFoundException;
 import com.moneymong.global.security.token.service.TokenService;

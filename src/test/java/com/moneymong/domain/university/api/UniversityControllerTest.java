@@ -5,8 +5,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.moneymong.domain.university.api.response.SearchUniversityResponse;
-import com.moneymong.domain.university.api.response.UniversityResponse;
+import com.moneymong.domain.university.service.dto.response.SearchUniversityResponse;
+import com.moneymong.domain.university.service.dto.response.UniversityResponse;
 import com.moneymong.domain.university.service.UniversityService;
 import com.moneymong.support.ControllerTestSupport;
 import java.util.List;

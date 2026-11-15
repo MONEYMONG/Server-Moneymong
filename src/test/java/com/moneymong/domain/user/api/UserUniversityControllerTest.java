@@ -13,9 +13,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.moneymong.domain.user.api.request.CreateUserUniversityRequest;
-import com.moneymong.domain.user.api.request.UpdateUserUniversityRequest;
-import com.moneymong.domain.user.api.response.UserUniversityResponse;
+import com.moneymong.domain.user.service.dto.request.CreateUserUniversityRequest;
+import com.moneymong.domain.user.service.dto.request.UpdateUserUniversityRequest;
+import com.moneymong.domain.user.service.dto.response.UserUniversityResponse;
 import com.moneymong.domain.user.service.UserUniversityService;
 import com.moneymong.global.exception.custom.BadRequestException;
 import com.moneymong.global.exception.custom.NotFoundException;

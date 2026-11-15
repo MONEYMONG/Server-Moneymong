@@ -11,8 +11,8 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 
 import com.moneymong.domain.agency.service.AgencyUserService;
-import com.moneymong.domain.user.api.request.LoginRequest;
-import com.moneymong.domain.user.api.response.LoginSuccessResponse;
+import com.moneymong.domain.user.service.dto.request.LoginRequest;
+import com.moneymong.domain.user.service.dto.response.LoginSuccessResponse;
 import com.moneymong.global.exception.custom.BusinessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;

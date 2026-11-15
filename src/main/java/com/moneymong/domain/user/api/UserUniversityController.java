@@ -1,8 +1,8 @@
 package com.moneymong.domain.user.api;
 
-import com.moneymong.domain.user.api.request.CreateUserUniversityRequest;
-import com.moneymong.domain.user.api.request.UpdateUserUniversityRequest;
-import com.moneymong.domain.user.api.response.UserUniversityResponse;
+import com.moneymong.domain.user.service.dto.request.CreateUserUniversityRequest;
+import com.moneymong.domain.user.service.dto.request.UpdateUserUniversityRequest;
+import com.moneymong.domain.user.service.dto.response.UserUniversityResponse;
 import com.moneymong.domain.user.service.UserUniversityService;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;

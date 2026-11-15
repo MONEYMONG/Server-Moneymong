@@ -1,9 +1,9 @@
 package com.moneymong.domain.user.service;
 
 import com.moneymong.domain.agency.service.AgencyUserService;
-import com.moneymong.domain.user.api.request.LoginRequest;
+import com.moneymong.domain.user.service.dto.request.LoginRequest;
 import com.moneymong.global.security.oauth.dto.AuthUserInfo;
-import com.moneymong.domain.user.api.response.LoginSuccessResponse;
+import com.moneymong.domain.user.service.dto.response.LoginSuccessResponse;
 import com.moneymong.global.security.oauth.dto.OAuthUserDataResponse;
 import com.moneymong.global.security.oauth.dto.OAuthUserInfo;
 import com.moneymong.global.security.service.OAuthService;

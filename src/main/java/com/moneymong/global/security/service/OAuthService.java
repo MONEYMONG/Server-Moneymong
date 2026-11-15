@@ -1,6 +1,6 @@
 package com.moneymong.global.security.service;
 
-import com.moneymong.domain.user.api.request.LoginRequest;
+import com.moneymong.domain.user.service.dto.request.LoginRequest;
 
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.domain.user.repository.UserRepository;

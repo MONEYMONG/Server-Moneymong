@@ -3,7 +3,7 @@ package com.moneymong.domain.category.service;
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
-import com.moneymong.domain.category.api.response.CategoryResponse;
+import com.moneymong.domain.category.service.dto.response.CategoryResponse;
 import com.moneymong.domain.category.entity.Category;
 import com.moneymong.domain.category.event.CategoryDeletedEvent;
 import com.moneymong.domain.category.repository.CategoryRepository;
