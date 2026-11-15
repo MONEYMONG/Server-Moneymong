@@ -206,7 +206,7 @@ class AgencyControllerTest extends ControllerTestSupport {
     @Test
     @DisplayName("카테고리를 생성하면 소속 ID와 카테고리 이름을 반환한다.")
     void createCategory() throws Exception {
-        given(categoryService.createCategory("회식비", AGENCY_ID))
+        given(categoryService.createCategory(USER_ID, "회식비", AGENCY_ID))
                 .willReturn(new CategoryResponse(5L, "회식비", AGENCY_ID));
 
         mockMvc.perform(post("/api/v1/agencies/categories")
@@ -216,13 +216,13 @@ class AgencyControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.agencyId").value(AGENCY_ID))
                 .andExpect(jsonPath("$.name").value("회식비"));
 
-        then(categoryService).should().createCategory("회식비", AGENCY_ID);
+        then(categoryService).should().createCategory(USER_ID, "회식비", AGENCY_ID);
     }
 
     @Test
     @DisplayName("소속의 카테고리 목록을 조회한다.")
     void getCategories() throws Exception {
-        given(categoryService.getCategoriesByAgencyId(AGENCY_ID))
+        given(categoryService.getCategoriesByAgencyId(USER_ID, AGENCY_ID))
                 .willReturn(List.of(
                         new CategoryResponse(5L, "회식비", AGENCY_ID),
                         new CategoryResponse(6L, "간식비", AGENCY_ID)
@@ -235,7 +235,7 @@ class AgencyControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.categories[0].id").value(5))
                 .andExpect(jsonPath("$.categories[1].name").value("간식비"));
 
-        then(categoryService).should().getCategoriesByAgencyId(AGENCY_ID);
+        then(categoryService).should().getCategoriesByAgencyId(USER_ID, AGENCY_ID);
     }
 
     @Test
@@ -246,7 +246,7 @@ class AgencyControllerTest extends ControllerTestSupport {
                         .content(toJson(Map.of("categoryId", 5))))
                 .andExpect(status().isOk());
 
-        then(categoryService).should().deleteCategory(5L);
+        then(categoryService).should().deleteCategory(USER_ID, 5L);
     }
 
     @Test

@@ -66,18 +66,23 @@ public class LedgerReceiptManager {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
 
         // === 소속 ===
-//        AgencyUser agencyUser = agencyUserRepository
-//                .findByUserIdAndAgencyId(user.getId(), ledgerDetail.getLedger().getAgency().getId())
-//                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
-//
-//        // === 권한 ===
-//        if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
-//            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
-//        }
+        AgencyUser agencyUser = agencyUserRepository
+                .findByUserIdAndAgencyId(user.getId(), ledgerDetail.getLedger().getAgency().getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+
+        // === 권한 ===
+        if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
+            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
+        }
 
         LedgerReceipt ledgerReceipt = ledgerReceiptRepository
                 .findById(receiptId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_RECEIPT_NOT_FOUND));
+
+        // 다른 장부 내역(다른 소속)의 영수증은 삭제할 수 없다.
+        if (!ledgerReceipt.getLedgerDetail().getId().equals(ledgerDetail.getId())) {
+            throw new NotFoundException(ErrorCode.LEDGER_RECEIPT_NOT_FOUND);
+        }
 
         ledgerReceiptRepository.delete(ledgerReceipt);
     }

@@ -9,6 +9,8 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
 import com.moneymong.domain.agency.entity.Agency;
+import com.moneymong.domain.agency.entity.AgencyUser;
+import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
@@ -19,6 +21,7 @@ import com.moneymong.domain.ledger.repository.LedgerReceiptRepository;
 import com.moneymong.domain.ledger.service.mapper.LedgerAssembler;
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.domain.user.repository.UserRepository;
+import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import java.util.List;
@@ -106,7 +109,7 @@ class LedgerReceiptManagerTest {
     // ===== removeReceipt =====
 
     @Test
-    @DisplayName("영수증을 삭제하면 해당 영수증이 삭제된다.")
+    @DisplayName("운영진이 영수증을 삭제하면 해당 영수증이 삭제된다.")
     void removeReceipt_success() {
         // given
         LedgerDetail detail = detail();
@@ -114,6 +117,7 @@ class LedgerReceiptManagerTest {
 
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(user()));
         given(ledgerDetailRepository.findById(DETAIL_ID)).willReturn(Optional.of(detail));
+        givenAgencyUser(AgencyUserRole.STAFF);
         given(ledgerReceiptRepository.findById(RECEIPT_ID)).willReturn(Optional.of(receipt));
 
         // when
@@ -121,6 +125,61 @@ class LedgerReceiptManagerTest {
 
         // then
         then(ledgerReceiptRepository).should().delete(receipt);
+    }
+
+    @Test
+    @DisplayName("운영진이 아닌 회원이 영수증을 삭제하면 INVALID_LEDGER_ACCESS 예외가 발생하고 삭제되지 않는다.")
+    void removeReceipt_notStaff() {
+        // given
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(user()));
+        given(ledgerDetailRepository.findById(DETAIL_ID)).willReturn(Optional.of(detail()));
+        givenAgencyUser(AgencyUserRole.MEMBER);
+
+        // when & then
+        assertThatThrownBy(() -> ledgerReceiptManager.removeReceipt(USER_ID, DETAIL_ID, RECEIPT_ID))
+                .isInstanceOf(InvalidAccessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.INVALID_LEDGER_ACCESS);
+
+        then(ledgerReceiptRepository).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @DisplayName("소속에 가입하지 않은 유저가 영수증을 삭제하면 AGENCY_NOT_FOUND 예외가 발생하고 삭제되지 않는다.")
+    void removeReceipt_notAgencyMember() {
+        // given
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(user()));
+        given(ledgerDetailRepository.findById(DETAIL_ID)).willReturn(Optional.of(detail()));
+        given(agencyUserRepository.findByUserIdAndAgencyId(USER_ID, AGENCY_ID)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> ledgerReceiptManager.removeReceipt(USER_ID, DETAIL_ID, RECEIPT_ID))
+                .isInstanceOf(NotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.AGENCY_NOT_FOUND);
+
+        then(ledgerReceiptRepository).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @DisplayName("다른 장부 내역의 영수증을 삭제하면 LEDGER_RECEIPT_NOT_FOUND 예외가 발생하고 삭제되지 않는다.")
+    void removeReceipt_receiptOfOtherDetail() {
+        // given
+        LedgerDetail otherDetail = LedgerDetail.builder().id(9999L).build();
+        LedgerReceipt receipt = LedgerReceipt.builder().id(RECEIPT_ID).ledgerDetail(otherDetail).receiptImageUrl("https://img/r1.png").build();
+
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(user()));
+        given(ledgerDetailRepository.findById(DETAIL_ID)).willReturn(Optional.of(detail()));
+        givenAgencyUser(AgencyUserRole.STAFF);
+        given(ledgerReceiptRepository.findById(RECEIPT_ID)).willReturn(Optional.of(receipt));
+
+        // when & then
+        assertThatThrownBy(() -> ledgerReceiptManager.removeReceipt(USER_ID, DETAIL_ID, RECEIPT_ID))
+                .isInstanceOf(NotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.LEDGER_RECEIPT_NOT_FOUND);
+
+        then(ledgerReceiptRepository).should(never()).delete(any());
     }
 
     @Test
@@ -160,6 +219,7 @@ class LedgerReceiptManagerTest {
         // given
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(user()));
         given(ledgerDetailRepository.findById(DETAIL_ID)).willReturn(Optional.of(detail()));
+        givenAgencyUser(AgencyUserRole.STAFF);
         given(ledgerReceiptRepository.findById(RECEIPT_ID)).willReturn(Optional.empty());
 
         // when & then
@@ -172,6 +232,12 @@ class LedgerReceiptManagerTest {
     }
 
     // ===== fixtures =====
+
+    private void givenAgencyUser(AgencyUserRole role) {
+        Agency agency = Agency.builder().id(AGENCY_ID).agencyName("머니몽 동아리").build();
+        given(agencyUserRepository.findByUserIdAndAgencyId(USER_ID, AGENCY_ID))
+                .willReturn(Optional.of(AgencyUser.builder().id(50L).agency(agency).userId(USER_ID).agencyUserRole(role).build()));
+    }
 
     private User user() {
         return User.builder().id(USER_ID).nickname("머니몽").provider("KAKAO").oauthId("oauth").build();
