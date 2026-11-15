@@ -5,13 +5,13 @@ import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.category.api.response.CategoryResponse;
 import com.moneymong.domain.category.entity.Category;
+import com.moneymong.domain.category.event.CategoryDeletedEvent;
 import com.moneymong.domain.category.repository.CategoryRepository;
-import com.moneymong.domain.ledger.entity.LedgerDetail;
-import com.moneymong.domain.ledger.repository.LedgerDetailRepository;
 import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +23,7 @@ import java.util.List;
 public class CategoryService {
     
     private final CategoryRepository categoryRepository;
-    private final LedgerDetailRepository ledgerDetailRepository;
+    private final ApplicationEventPublisher eventPublisher;
     private final AgencyUserRepository agencyUserRepository;
 
     @Transactional
@@ -53,18 +53,9 @@ public class CategoryService {
 
         validateStaffUser(userId, category.getAgencyId());
 
-        // 해당 카테고리를 사용하는 LedgerDetail들의 category를 null로 설정
-        List<LedgerDetail> ledgerDetailsWithCategory = ledgerDetailRepository.findAllByCategory(category);
-        for (LedgerDetail ledgerDetail : ledgerDetailsWithCategory) {
-            ledgerDetail.updateLedgerDetailInfo(
-                    ledgerDetail.getStoreInfo(),
-                    ledgerDetail.getAmount(),
-                    ledgerDetail.getDescription(),
-                    ledgerDetail.getPaymentDate(),
-                    null // 카테고리를 null로 설정
-            );
-        }
-        
+        // 카테고리를 참조하는 장부 내역의 카테고리를 먼저 비운다. listener는 같은 transaction에서 동기로 실행된다.
+        eventPublisher.publishEvent(new CategoryDeletedEvent(category));
+
         categoryRepository.delete(category);
     }
 
