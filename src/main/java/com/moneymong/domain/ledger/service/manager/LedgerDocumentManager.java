@@ -79,6 +79,11 @@ public class LedgerDocumentManager {
                 .findById(documentId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DOCUMENT_NOT_FOUND));
 
+        // 다른 장부 내역(다른 소속)의 증빙 자료는 삭제할 수 없다.
+        if (!ledgerDocument.getLedgerDetail().getId().equals(ledgerDetail.getId())) {
+            throw new NotFoundException(ErrorCode.LEDGER_DOCUMENT_NOT_FOUND);
+        }
+
         ledgerDocumentRepository.delete(ledgerDocument);
     }
 }

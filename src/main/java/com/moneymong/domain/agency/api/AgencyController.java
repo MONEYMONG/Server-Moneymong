@@ -107,13 +107,13 @@ public class AgencyController {
 
     @PostMapping("/categories")
     public CreateCategoryResponse createCategory(@RequestBody CreateCategoryRequest request, @AuthenticationPrincipal JwtAuthentication user) {
-        var categoryResponse = categoryService.createCategory(request.name(), request.agencyId());
+        var categoryResponse = categoryService.createCategory(user.getId(), request.name(), request.agencyId());
         return new CreateCategoryResponse(categoryResponse.getAgencyId(), categoryResponse.getName());
     }
 
     @GetMapping("/categories")
     public CategoryResponses getCategories(@RequestParam("agencyId") Long agencyId, @AuthenticationPrincipal JwtAuthentication user) {
-        var categoryResponses = categoryService.getCategoriesByAgencyId(agencyId);
+        var categoryResponses = categoryService.getCategoriesByAgencyId(user.getId(), agencyId);
         
         List<CategoryResponse> agencyCategoryResponses = categoryResponses.stream()
                 .map(response -> new CategoryResponse(response.getId(), response.getName()))
@@ -128,6 +128,6 @@ public class AgencyController {
             @RequestBody @Valid DeleteCategoryRequest request,
             @AuthenticationPrincipal JwtAuthentication user
     ) {
-        categoryService.deleteCategory(request.getCategoryId());
+        categoryService.deleteCategory(user.getId(), request.getCategoryId());
     }
 }

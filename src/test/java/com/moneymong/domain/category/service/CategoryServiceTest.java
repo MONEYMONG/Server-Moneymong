@@ -8,12 +8,17 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
+import com.moneymong.domain.agency.entity.Agency;
+import com.moneymong.domain.agency.entity.AgencyUser;
+import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
+import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.category.api.response.CategoryResponse;
 import com.moneymong.domain.category.entity.Category;
 import com.moneymong.domain.category.repository.CategoryRepository;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.repository.LedgerDetailRepository;
 import com.moneymong.global.exception.custom.BusinessException;
+import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import java.time.ZonedDateTime;
@@ -30,24 +35,28 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
 
+    private static final Long USER_ID = 100L;
     private static final Long AGENCY_ID = 10L;
 
     @Mock
     private CategoryRepository categoryRepository;
     @Mock
     private LedgerDetailRepository ledgerDetailRepository;
+    @Mock
+    private AgencyUserRepository agencyUserRepository;
 
     @InjectMocks
     private CategoryService categoryService;
 
     @Test
-    @DisplayName("카테고리를 생성하면 저장된 카테고리 정보를 반환한다.")
+    @DisplayName("운영진이 카테고리를 생성하면 저장된 카테고리 정보를 반환한다.")
     void createCategory() {
         // given
+        givenAgencyUser(AgencyUserRole.STAFF);
         given(categoryRepository.save(any(Category.class))).willReturn(category(1L, "회식비"));
 
         // when
-        CategoryResponse response = categoryService.createCategory("회식비", AGENCY_ID);
+        CategoryResponse response = categoryService.createCategory(USER_ID, "회식비", AGENCY_ID);
 
         // then
         assertThat(response.getId()).isEqualTo(1L);
@@ -61,14 +70,15 @@ class CategoryServiceTest {
     }
 
     @Test
-    @DisplayName("소속의 카테고리 목록을 조회한다.")
+    @DisplayName("소속 회원은 소속의 카테고리 목록을 조회할 수 있다.")
     void getCategoriesByAgencyId() {
         // given
+        givenAgencyUser(AgencyUserRole.MEMBER);
         given(categoryRepository.findByAgencyId(AGENCY_ID))
                 .willReturn(List.of(category(1L, "회식비"), category(2L, "간식비")));
 
         // when
-        List<CategoryResponse> responses = categoryService.getCategoriesByAgencyId(AGENCY_ID);
+        List<CategoryResponse> responses = categoryService.getCategoriesByAgencyId(USER_ID, AGENCY_ID);
 
         // then
         assertThat(responses)
@@ -77,7 +87,7 @@ class CategoryServiceTest {
     }
 
     @Test
-    @DisplayName("카테고리를 삭제하면 해당 카테고리를 쓰던 장부 내역의 카테고리만 비우고 나머지 정보는 유지한다.")
+    @DisplayName("운영진이 카테고리를 삭제하면 해당 카테고리를 쓰던 장부 내역의 카테고리만 비우고 나머지 정보는 유지한다.")
     void deleteCategory() {
         // given
         Category category = category(1L, "회식비");
@@ -86,9 +96,10 @@ class CategoryServiceTest {
         LedgerDetail second = ledgerDetail("가게B", 2000, "설명B", paymentDate, category);
         given(categoryRepository.findById(1L)).willReturn(Optional.of(category));
         given(ledgerDetailRepository.findAllByCategory(category)).willReturn(List.of(first, second));
+        givenAgencyUser(AgencyUserRole.STAFF);
 
         // when
-        categoryService.deleteCategory(1L);
+        categoryService.deleteCategory(USER_ID, 1L);
 
         // then
         assertThat(List.of(first, second)).allSatisfy(detail -> assertThat(detail.getCategory()).isNull());
@@ -107,12 +118,90 @@ class CategoryServiceTest {
         given(categoryRepository.findById(1L)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> categoryService.deleteCategory(1L))
+        assertThatThrownBy(() -> categoryService.deleteCategory(USER_ID, 1L))
                 .isInstanceOf(NotFoundException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.LEDGER_CATEGORY_NOT_FOUND);
         then(ledgerDetailRepository).should(never()).findAllByCategory(any());
         then(categoryRepository).should(never()).delete(any());
+    }
+
+    @Test
+    @DisplayName("운영진이 아닌 회원이 카테고리를 생성하면 INVALID_AGENCY_USER_ACCESS 예외가 발생하고 저장되지 않는다.")
+    void createCategoryByMember() {
+        // given
+        givenAgencyUser(AgencyUserRole.MEMBER);
+
+        // when & then
+        assertThatThrownBy(() -> categoryService.createCategory(USER_ID, "회식비", AGENCY_ID))
+                .isInstanceOf(InvalidAccessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_AGENCY_USER_ACCESS);
+        then(categoryRepository).should(never()).save(any());
+    }
+
+    @Test
+    @DisplayName("소속에 가입하지 않은 유저가 카테고리를 생성하면 AGENCY_USER_NOT_FOUND 예외가 발생하고 저장되지 않는다.")
+    void createCategoryByNonMember() {
+        // given
+        given(agencyUserRepository.findByUserIdAndAgencyId(USER_ID, AGENCY_ID)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> categoryService.createCategory(USER_ID, "회식비", AGENCY_ID))
+                .isInstanceOf(NotFoundException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.AGENCY_USER_NOT_FOUND);
+        then(categoryRepository).should(never()).save(any());
+    }
+
+    @Test
+    @DisplayName("강제퇴장된 회원이 카테고리 목록을 조회하면 INVALID_AGENCY_USER_ACCESS 예외가 발생한다.")
+    void getCategoriesByBlockedUser() {
+        // given
+        givenAgencyUser(AgencyUserRole.BLOCKED);
+
+        // when & then
+        assertThatThrownBy(() -> categoryService.getCategoriesByAgencyId(USER_ID, AGENCY_ID))
+                .isInstanceOf(InvalidAccessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_AGENCY_USER_ACCESS);
+        then(categoryRepository).should(never()).findByAgencyId(any());
+    }
+
+    @Test
+    @DisplayName("소속에 가입하지 않은 유저가 카테고리 목록을 조회하면 AGENCY_USER_NOT_FOUND 예외가 발생한다.")
+    void getCategoriesByNonMember() {
+        // given
+        given(agencyUserRepository.findByUserIdAndAgencyId(USER_ID, AGENCY_ID)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> categoryService.getCategoriesByAgencyId(USER_ID, AGENCY_ID))
+                .isInstanceOf(NotFoundException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.AGENCY_USER_NOT_FOUND);
+        then(categoryRepository).should(never()).findByAgencyId(any());
+    }
+
+    @Test
+    @DisplayName("운영진이 아닌 회원이 카테고리를 삭제하면 INVALID_AGENCY_USER_ACCESS 예외가 발생하고 장부 내역과 카테고리가 변경되지 않는다.")
+    void deleteCategoryByMember() {
+        // given
+        given(categoryRepository.findById(1L)).willReturn(Optional.of(category(1L, "회식비")));
+        givenAgencyUser(AgencyUserRole.MEMBER);
+
+        // when & then
+        assertThatThrownBy(() -> categoryService.deleteCategory(USER_ID, 1L))
+                .isInstanceOf(InvalidAccessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_AGENCY_USER_ACCESS);
+        then(ledgerDetailRepository).should(never()).findAllByCategory(any());
+        then(categoryRepository).should(never()).delete(any());
+    }
+
+    private void givenAgencyUser(AgencyUserRole role) {
+        Agency agency = Agency.builder().id(AGENCY_ID).agencyName("머니몽 동아리").build();
+        given(agencyUserRepository.findByUserIdAndAgencyId(USER_ID, AGENCY_ID))
+                .willReturn(Optional.of(AgencyUser.builder().id(50L).agency(agency).userId(USER_ID).agencyUserRole(role).build()));
     }
 
     private Category category(Long id, String name) {

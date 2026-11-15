@@ -200,6 +200,28 @@ class LedgerDocumentManagerTest {
         then(ledgerDocumentRepository).should(never()).delete(any());
     }
 
+    @Test
+    @DisplayName("다른 장부 내역의 증빙 자료를 삭제하면 LEDGER_DOCUMENT_NOT_FOUND 예외가 발생하고 삭제되지 않는다.")
+    void removeLedgerDocuments_documentOfOtherDetail() {
+        // given
+        LedgerDetail otherDetail = LedgerDetail.builder().id(9999L).build();
+        LedgerDocument document = LedgerDocument.builder().id(DOCUMENT_ID).ledgerDetail(otherDetail).documentImageUrl("https://img/d1.png").build();
+
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(user()));
+        given(ledgerDetailRepository.findById(DETAIL_ID)).willReturn(Optional.of(detail()));
+        given(agencyUserRepository.findByUserIdAndAgencyId(USER_ID, AGENCY_ID))
+                .willReturn(Optional.of(agencyUser(AgencyUserRole.STAFF)));
+        given(ledgerDocumentRepository.findById(DOCUMENT_ID)).willReturn(Optional.of(document));
+
+        // when & then
+        assertThatThrownBy(() -> ledgerDocumentManager.removeLedgerDocuments(USER_ID, DETAIL_ID, DOCUMENT_ID))
+                .isInstanceOf(NotFoundException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.LEDGER_DOCUMENT_NOT_FOUND);
+
+        then(ledgerDocumentRepository).should(never()).delete(any());
+    }
+
     // ===== fixtures =====
 
     private Agency agency() {

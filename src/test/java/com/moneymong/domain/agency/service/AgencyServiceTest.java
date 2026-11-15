@@ -33,6 +33,7 @@ import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.user.entity.UserUniversity;
 import com.moneymong.domain.user.repository.UserUniversityRepository;
 import com.moneymong.global.exception.custom.BusinessException;
+import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import java.util.List;
@@ -287,6 +288,21 @@ class AgencyServiceTest {
 
         // then
         then(agencyRepository).should().delete(agency);
+    }
+
+    @Test
+    @DisplayName("운영진이 아닌 회원이 소속을 삭제하면 INVALID_AGENCY_USER_ACCESS 예외가 발생하고 삭제되지 않는다.")
+    void deleteByMember() {
+        // given
+        givenAgencyUser(AgencyUserRole.MEMBER);
+
+        // when & then
+        assertThatThrownBy(() -> agencyService.delete(USER_ID, AGENCY_ID))
+                .isInstanceOf(InvalidAccessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_AGENCY_USER_ACCESS);
+        then(agencyRepository).should(never()).findById(any());
+        then(agencyRepository).should(never()).delete(any());
     }
 
     @Test
