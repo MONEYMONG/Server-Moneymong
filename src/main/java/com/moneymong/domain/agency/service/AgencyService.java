@@ -16,7 +16,6 @@ import com.moneymong.domain.invitationcode.repository.InvitationCodeCertificatio
 import com.moneymong.domain.invitationcode.repository.InvitationCodeRepository;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.repository.LedgerRepository;
-import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.user.entity.UserUniversity;
 import com.moneymong.domain.user.repository.UserUniversityRepository;
 import com.moneymong.global.exception.custom.InvalidAccessException;
@@ -46,7 +45,6 @@ public class AgencyService {
     private final LedgerRepository ledgerRepository;
     private final InvitationCodeRepository invitationCodeRepository;
     private final InvitationCodeCertificationRepository invitationCodeCertificationRepository;
-    private final LedgerService ledgerService;
 
     public SearchAgencyResponse getAgencyList(Long userId, Pageable pageable) {
         String universityName = getUniversityName(userId);
@@ -155,8 +153,6 @@ public class AgencyService {
 
         Agency agency = agencyRepository.findById(agencyId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
-
-        // ledgerService.deleteLedger(agencyId);
 
         agencyRepository.delete(agency);
     }

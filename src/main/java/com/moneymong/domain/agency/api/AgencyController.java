@@ -2,19 +2,13 @@ package com.moneymong.domain.agency.api;
 
 import com.moneymong.domain.agency.api.request.BlockAgencyUserRequest;
 import com.moneymong.domain.agency.api.request.CreateAgencyRequest;
-import com.moneymong.domain.agency.api.request.CreateCategoryRequest;
-import com.moneymong.domain.agency.api.request.DeleteCategoryRequest;
 import com.moneymong.domain.agency.api.request.UpdateAgencyUserRoleRequest;
 import com.moneymong.domain.agency.api.response.AgencyResponse;
 import com.moneymong.domain.agency.api.response.AgencyUserResponses;
-import com.moneymong.domain.agency.api.response.CategoryResponses;
 import com.moneymong.domain.agency.api.response.CreateAgencyResponse;
-import com.moneymong.domain.agency.api.response.CreateCategoryResponse;
-import com.moneymong.domain.agency.api.response.CategoryResponse;
 import com.moneymong.domain.agency.api.response.SearchAgencyResponse;
 import com.moneymong.domain.agency.service.AgencyService;
 import com.moneymong.domain.agency.service.AgencyUserService;
-import com.moneymong.domain.category.service.CategoryService;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -35,7 +28,6 @@ public class AgencyController {
 
     private final AgencyService agencyService;
     private final AgencyUserService agencyUserService;
-    private final CategoryService categoryService;
 
     @Operation(summary = "소속 생성")
     @PostMapping
@@ -103,31 +95,5 @@ public class AgencyController {
         @PathVariable("agencyId") Long agencyId
         ) {
         agencyService.delete(user.getId(), agencyId);
-    }
-
-    @PostMapping("/categories")
-    public CreateCategoryResponse createCategory(@RequestBody CreateCategoryRequest request, @AuthenticationPrincipal JwtAuthentication user) {
-        var categoryResponse = categoryService.createCategory(user.getId(), request.name(), request.agencyId());
-        return new CreateCategoryResponse(categoryResponse.getAgencyId(), categoryResponse.getName());
-    }
-
-    @GetMapping("/categories")
-    public CategoryResponses getCategories(@RequestParam("agencyId") Long agencyId, @AuthenticationPrincipal JwtAuthentication user) {
-        var categoryResponses = categoryService.getCategoriesByAgencyId(user.getId(), agencyId);
-        
-        List<CategoryResponse> agencyCategoryResponses = categoryResponses.stream()
-                .map(response -> new CategoryResponse(response.getId(), response.getName()))
-                .toList();
-        
-        return new CategoryResponses(agencyId, agencyCategoryResponses);
-    }
-
-    @Operation(summary = "카테고리 삭제 API")
-    @DeleteMapping("/categories")
-    public void deleteCategory(
-            @RequestBody @Valid DeleteCategoryRequest request,
-            @AuthenticationPrincipal JwtAuthentication user
-    ) {
-        categoryService.deleteCategory(user.getId(), request.getCategoryId());
     }
 }

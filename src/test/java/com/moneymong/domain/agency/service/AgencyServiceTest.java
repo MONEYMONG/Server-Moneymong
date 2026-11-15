@@ -29,7 +29,6 @@ import com.moneymong.domain.invitationcode.repository.InvitationCodeCertificatio
 import com.moneymong.domain.invitationcode.repository.InvitationCodeRepository;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.repository.LedgerRepository;
-import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.user.entity.UserUniversity;
 import com.moneymong.domain.user.repository.UserUniversityRepository;
 import com.moneymong.global.exception.custom.BusinessException;
@@ -69,8 +68,6 @@ class AgencyServiceTest {
     private InvitationCodeRepository invitationCodeRepository;
     @Mock
     private InvitationCodeCertificationRepository invitationCodeCertificationRepository;
-    @Mock
-    private LedgerService ledgerService;
 
     @InjectMocks
     private AgencyService agencyService;
