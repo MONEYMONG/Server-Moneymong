@@ -5,12 +5,15 @@ import com.moneymong.global.config.web.WebConfig;
 import com.moneymong.global.exception.GlobalExceptionHandler;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthenticationToken;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,7 +53,12 @@ public abstract class ControllerTestSupport {
                         new AuthenticationPrincipalArgumentResolver(),
                         new PageableHandlerMethodArgumentResolver()
                 )
-                .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
+                // Spring Boot 기본 구성과 같은 순서: String, Resource 반환값은 Jackson보다 먼저 처리한다.
+                .setMessageConverters(
+                        new StringHttpMessageConverter(StandardCharsets.UTF_8),
+                        new ResourceHttpMessageConverter(),
+                        new MappingJackson2HttpMessageConverter(objectMapper)
+                )
                 .setValidator(validator)
                 .build();
 
