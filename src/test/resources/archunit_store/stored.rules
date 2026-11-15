@@ -1,0 +1,8 @@
+#
+#Mon Nov 16 02:15:24 KST 2026
+no\ classes\ that\ reside\ in\ a\ package\ 'com.moneymong.global..'\ should\ depend\ on\ classes\ that\ reside\ in\ a\ package\ 'com.moneymong.domain..'=5633716a-3c74-4430-9cb6-918b1e7a1650
+no\ classes\ that\ reside\ in\ a\ package\ '..service..'\ should\ depend\ on\ classes\ that\ reside\ in\ a\ package\ '..api..'=2ef857c2-64eb-46c8-bb9f-c2439910722c
+slices\ matching\ 'com.moneymong.(*).(*)..'\ should\ be\ free\ of\ cycles=040da667-c453-48c0-94aa-279653de5e27
+no\ classes\ that\ reside\ in\ a\ package\ '..entity..'\ should\ depend\ on\ classes\ that\ reside\ in\ any\ package\ ['..service..',\ '..api..']=111f5bf5-4333-407d-a66b-fff943319b82
+no\ classes\ that\ reside\ in\ a\ package\ '..repository..'\ should\ depend\ on\ classes\ that\ reside\ in\ any\ package\ ['..service..',\ '..api..']=04fad33f-37ad-4525-8988-ea52ebfc3116
+no\ classes\ that\ reside\ in\ a\ package\ '..service..'\ should\ depend\ on\ classes\ that\ have\ simple\ name\ ending\ with\ 'Controller'=761e85eb-954c-4853-a309-132ed80674bd
