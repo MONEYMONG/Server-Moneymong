@@ -19,6 +19,7 @@ import com.moneymong.domain.ledger.repository.LedgerRepository;
 import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.user.entity.UserUniversity;
 import com.moneymong.domain.user.repository.UserUniversityRepository;
+import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.utils.RandomCodeGenerator;
@@ -147,7 +148,10 @@ public class AgencyService {
 
     @Transactional
     public void delete(Long userId, Long agencyId) {
-        validateAgencyUserRole(userId, agencyId);
+        AgencyUserRole role = validateAgencyUserRole(userId, agencyId);
+        if (!isStaffUser(role)) {
+            throw new InvalidAccessException(ErrorCode.INVALID_AGENCY_USER_ACCESS);
+        }
 
         Agency agency = agencyRepository.findById(agencyId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
