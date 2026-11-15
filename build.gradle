@@ -73,6 +73,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// 패키지 의존 규칙 검사
+	testImplementation 'com.tngtech.archunit:archunit-junit5:1.4.1'
 }
 
 tasks.named('test') {
