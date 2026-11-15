@@ -3,7 +3,7 @@ package com.moneymong.domain.invitationcode.api;
 import com.moneymong.domain.invitationcode.service.dto.request.CertifyInvitationCodeRequest;
 import com.moneymong.domain.invitationcode.service.dto.response.CertifyInvitationCodeResponse;
 import com.moneymong.domain.invitationcode.service.InvitationCodeService;
-import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
+import com.moneymong.domain.auth.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

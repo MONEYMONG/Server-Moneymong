@@ -1,8 +1,8 @@
 package com.moneymong.global.config.security;
 
-import com.moneymong.global.security.token.filter.ExceptionHandlerFilter;
-import com.moneymong.global.security.token.filter.JwtAuthenticationEntryPoint;
-import com.moneymong.global.security.token.filter.JwtAuthenticationFilter;
+import com.moneymong.global.security.filter.ExceptionHandlerFilter;
+import com.moneymong.global.security.filter.JwtAuthenticationEntryPoint;
+import com.moneymong.global.security.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

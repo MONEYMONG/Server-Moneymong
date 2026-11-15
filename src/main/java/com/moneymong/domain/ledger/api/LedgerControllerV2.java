@@ -9,7 +9,7 @@ import com.moneymong.domain.ledger.service.dto.response.ledger.LedgerInfoViewV2;
 import com.moneymong.domain.ledger.service.manager.LedgerDetailService;
 import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.ledger.service.reader.LedgerReader;
-import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
+import com.moneymong.domain.auth.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

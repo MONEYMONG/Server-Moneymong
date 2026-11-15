@@ -11,7 +11,7 @@ import com.moneymong.domain.ledger.service.dto.response.report.LedgerReportRespo
 import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.ledger.service.reader.LedgerReader;
 import com.moneymong.domain.ledger.service.reader.LedgerReportReader;
-import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
+import com.moneymong.domain.auth.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

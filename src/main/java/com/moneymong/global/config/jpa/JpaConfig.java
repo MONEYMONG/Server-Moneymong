@@ -31,7 +31,7 @@ import java.util.Map;
         },
         excludeFilters = @ComponentScan.Filter(
                 type = FilterType.REGEX,
-                pattern = "com.moneymong.global.security.token.*"
+                pattern = "com\\.moneymong\\.domain\\.auth\\.repository\\.RefreshTokenRepository"
         ),
         entityManagerFactoryRef = "moneyMongEntityManagerFactory",
         transactionManagerRef = "moneyMongTransactionManager"

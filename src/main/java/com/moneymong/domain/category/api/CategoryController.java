@@ -6,7 +6,7 @@ import com.moneymong.domain.category.api.response.CategoryItemResponse;
 import com.moneymong.domain.category.api.response.CategoryResponses;
 import com.moneymong.domain.category.api.response.CreateCategoryResponse;
 import com.moneymong.domain.category.service.CategoryService;
-import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
+import com.moneymong.domain.auth.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

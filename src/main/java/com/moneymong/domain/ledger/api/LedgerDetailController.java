@@ -3,7 +3,7 @@ package com.moneymong.domain.ledger.api;
 import com.moneymong.domain.ledger.service.dto.response.LedgerDetailInfoView;
 import com.moneymong.domain.ledger.service.manager.LedgerDetailService;
 import com.moneymong.domain.ledger.service.reader.LedgerDetailReader;
-import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
+import com.moneymong.domain.auth.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

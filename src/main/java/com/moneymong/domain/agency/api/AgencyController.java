@@ -9,7 +9,7 @@ import com.moneymong.domain.agency.service.dto.response.CreateAgencyResponse;
 import com.moneymong.domain.agency.service.dto.response.SearchAgencyResponse;
 import com.moneymong.domain.agency.service.AgencyService;
 import com.moneymong.domain.agency.service.AgencyUserService;
-import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
+import com.moneymong.domain.auth.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
