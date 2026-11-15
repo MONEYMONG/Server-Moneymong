@@ -40,7 +40,6 @@ public class TokenService {
         String accessToken = createAccessToken(userId, role);
         String refreshToken = createRefreshToken(userId, role);
 
-        log.info("Test Access Token ={}", accessToken);
         return new Tokens(accessToken, refreshToken);
     }
 
@@ -88,8 +87,6 @@ public class TokenService {
     }
 
     public JwtAuthenticationToken getAuthenticationByAccessToken(String accessToken) {
-        log.info("Test Access Token ={}", accessToken);
-
         jwtTokenProvider.validateToken(accessToken);
 
         Claims claims = jwtTokenProvider.getClaims(accessToken);
