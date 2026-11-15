@@ -55,7 +55,7 @@ jobs:
           host: ${{ secrets.AWS_DEV_IP }}
           password: ${{ secrets.AWS_DEV_PASSWORD }}
           port: 22
-          source: "./.docker/docker-compose.yml"
+          source: "./.docker/docker-compose.dev.yml"
           target: "/root"
 
       # 도커 컴포즈 실행
@@ -67,7 +67,7 @@ jobs:
           password: ${{ secrets.AWS_DEV_PASSWORD }}
           script: |
             set -e
-            cp /root/.docker/docker-compose.yml /root
+            cp /root/.docker/docker-compose.dev.yml /root/docker-compose.yml
             cd /root
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
             docker-compose stop server

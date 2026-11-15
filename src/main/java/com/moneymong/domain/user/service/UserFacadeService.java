@@ -24,9 +24,7 @@ public class UserFacadeService {
 
     public LoginSuccessResponse login(LoginRequest loginRequest) {
         OAuthUserDataResponse oAuthUserData = oAuthService.login(loginRequest);
-
         OAuthUserInfo oAuthUserInfo = OAuthUserInfo.from(oAuthUserData);
-
         AuthUserInfo registerResult = userService.getOrRegister(oAuthUserInfo);
 
         Tokens tokens = tokenService.createTokens(registerResult);
