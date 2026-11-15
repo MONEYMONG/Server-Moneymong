@@ -55,7 +55,7 @@ jobs:
           host: ${{ secrets.AWS_PROD_IP }}
           key: ${{ secrets.AWS_PROD_PASSWORD }}
           port: 22
-          source: "./.docker/docker-compose.yml"
+          source: "./.docker/docker-compose.prod.yml"
           target: "/home/ubuntu/"
 
       # 도커 컴포즈 실행
@@ -67,7 +67,7 @@ jobs:
           key: ${{ secrets.AWS_PROD_PASSWORD }}
           script: |
             set -e
-            sudo cp /home/ubuntu/.docker/docker-compose.yml /home/ubuntu
+            sudo cp /home/ubuntu/.docker/docker-compose.prod.yml /home/ubuntu/docker-compose.yml
             cd /home/ubuntu
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
             docker-compose stop server

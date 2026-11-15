@@ -1,0 +1,57 @@
+version: '3'
+services:
+  server:
+    container_name: server
+    image: ${DOCKER_IMAGE_NAME}
+    ports:
+      - ${DOCKER_SERVER_PORT}
+    environment:
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      NCP_ACCESS_KEY: ${NCP_ACCESS_KEY}
+      NCP_SECRET_KEY: ${NCP_SECRET_KEY}
+      ACTIVE_PROFILE: ${ACTIVE_PROFILE}
+      DB_ROOT_PASSWORD_DEV: ${DB_ROOT_PASSWORD_DEV}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      APPLE_PRIVATE_KEY: ${APPLE_PRIVATE_KEY}
+      APPLE_TEAM_ID: ${APPLE_TEAM_ID}
+      APPLE_KEY_ID: ${APPLE_KEY_ID}
+      APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}
+      KAKAO_ADMIN_KEY: ${KAKAO_ADMIN_KEY}
+      INVITATION_CODE_KEY: ${INVITATION_CODE_KEY}
+      APP_MINIMUM_VERSION: ${APP_MINIMUM_VERSION}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - ./logfile:/logs
+    depends_on:
+      - mysql
+    restart: always
+
+  mysql:
+    container_name: moneymong-db
+    image: mysql:8
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: moneymong
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: always
+
+  redis:
+    container_name: moneymong-redis
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
