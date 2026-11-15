@@ -9,6 +9,12 @@ on:
 permissions:
   contents: read
 
+# 같은 환경 배포가 동시에 실행되면 server 컨테이너 교체가 서로 충돌하므로 순차 실행한다.
+# 진행 중인 배포는 취소하지 않고, 다음 배포는 앞 배포가 끝날 때까지 대기한다.
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
 jobs:
   CI-CD:
     runs-on: ubuntu-latest
