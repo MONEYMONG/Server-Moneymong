@@ -1,0 +1,48 @@
+version: '3'
+services:
+  db:
+    container_name: moneymong-db
+    image: mysql
+    environment:
+      MYSQL_DATABASE: moneymong
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD_DEV}
+      TZ: Asia/Seoul
+    ports:
+      - ${DOCKER_DB_PORT}
+    volumes:
+      - ./mysqldata:/var/lib/mysql
+    restart: always
+
+  server:
+    container_name: server
+    image: ${DOCKER_IMAGE_NAME}
+    ports:
+      - ${DOCKER_SERVER_PORT}
+    environment:
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      NCP_ACCESS_KEY: ${NCP_ACCESS_KEY}
+      NCP_SECRET_KEY: ${NCP_SECRET_KEY}
+      ACTIVE_PROFILE: ${ACTIVE_PROFILE}
+      DB_ROOT_PASSWORD_DEV: ${DB_ROOT_PASSWORD_DEV}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      APPLE_PRIVATE_KEY: ${APPLE_PRIVATE_KEY}
+      APPLE_TEAM_ID: ${APPLE_TEAM_ID}
+      APPLE_KEY_ID: ${APPLE_KEY_ID}
+      APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}
+      KAKAO_ADMIN_KEY: ${KAKAO_ADMIN_KEY}
+      INVITATION_CODE_KEY: ${INVITATION_CODE_KEY}
+      APP_MINIMUM_VERSION: ${APP_MINIMUM_VERSION}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - ./logfile:/logs
+
+  redis:
+    container_name: moneymong-redis
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data

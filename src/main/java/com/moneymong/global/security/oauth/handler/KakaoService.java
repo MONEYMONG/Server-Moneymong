@@ -67,7 +67,7 @@ public class KakaoService implements OAuthAuthenticationHandler {
                     .build();
 
         } catch (RestClientException e) {
-            log.warn("[KakaoService] failed to get OAuth User Data = {}", request.getAccessToken());
+            log.warn("[KakaoService] failed to get OAuth User Data, message = {}", e.getMessage());
 
             if (e instanceof RestClientResponseException) {
                 throw new HttpClientException(ErrorCode.INVALID_OAUTH_TOKEN);

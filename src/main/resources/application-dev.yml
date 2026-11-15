@@ -22,7 +22,7 @@ spring:
 
   data:
     redis:
-      host: moneymong-redis
+      host: redis
       port: 6379
       password: ${REDIS_PASSWORD}
 
@@ -63,8 +63,8 @@ jwt:
   issuer: MONEYMONG
   secret-key: ${JWT_SECRET_KEY}
   expiry-seconds:
-    access-token: 259200000
-    refresh-token: 1209600000
+    access-token: 1800
+    refresh-token: 1209600
 
 # deep link
 applink:

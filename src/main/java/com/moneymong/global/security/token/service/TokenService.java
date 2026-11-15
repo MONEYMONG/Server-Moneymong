@@ -40,7 +40,6 @@ public class TokenService {
         String accessToken = createAccessToken(userId, role);
         String refreshToken = createRefreshToken(userId, role);
 
-        log.info("Test Access Token ={}", accessToken);
         return new Tokens(accessToken, refreshToken);
     }
 
