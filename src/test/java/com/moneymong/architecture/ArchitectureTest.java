@@ -25,11 +25,22 @@ class ArchitectureTest {
                     .should().beFreeOfCycles()
     );
 
+    // 멀티모듈 분리 시 common module로 갈 패키지. domain이나 web 계층(config, security filter 등)을 알면 안 된다.
+    // global의 나머지 패키지(config, security filter, image, version, applink)는 api module로 가므로 domain을 참조해도 된다.
     @ArchTest
-    static final ArchRule global은_domain에_의존하지_않는다 = freeze(
-            noClasses().that().resideInAPackage("com.moneymong.global..")
-                    .should().dependOnClassesThat().resideInAPackage("com.moneymong.domain..")
-    );
+    static final ArchRule common_패키지는_domain과_web_계층에_의존하지_않는다 =
+            noClasses().that().resideInAnyPackage(
+                            "com.moneymong.global.exception..",
+                            "com.moneymong.global.constant..",
+                            "com.moneymong.global.domain..",
+                            "com.moneymong.utils..")
+                    .should().dependOnClassesThat().resideInAnyPackage(
+                            "com.moneymong.domain..",
+                            "com.moneymong.global.config..",
+                            "com.moneymong.global.security..",
+                            "com.moneymong.global.image..",
+                            "com.moneymong.global.version..",
+                            "com.moneymong.global.applink..");
 
     @ArchTest
     static final ArchRule entity는_service와_api에_의존하지_않는다 = freeze(

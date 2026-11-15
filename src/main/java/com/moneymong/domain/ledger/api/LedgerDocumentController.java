@@ -2,7 +2,7 @@ package com.moneymong.domain.ledger.api;
 
 import com.moneymong.domain.ledger.api.request.CreateLedgerDocumentRequest;
 import com.moneymong.domain.ledger.service.manager.LedgerDocumentManager;
-import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
+import com.moneymong.domain.auth.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

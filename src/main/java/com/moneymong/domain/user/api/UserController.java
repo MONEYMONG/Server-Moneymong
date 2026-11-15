@@ -5,7 +5,7 @@ import com.moneymong.domain.user.service.dto.response.UserProfileResponse;
 import com.moneymong.domain.user.service.UserFacadeService;
 import com.moneymong.domain.user.service.UserService;
 import com.moneymong.domain.user.service.dto.response.LoginSuccessResponse;
-import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
+import com.moneymong.domain.auth.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

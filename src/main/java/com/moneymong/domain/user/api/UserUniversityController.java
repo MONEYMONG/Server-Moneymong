@@ -4,7 +4,7 @@ import com.moneymong.domain.user.service.dto.request.CreateUserUniversityRequest
 import com.moneymong.domain.user.service.dto.request.UpdateUserUniversityRequest;
 import com.moneymong.domain.user.service.dto.response.UserUniversityResponse;
 import com.moneymong.domain.user.service.UserUniversityService;
-import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
+import com.moneymong.domain.auth.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
