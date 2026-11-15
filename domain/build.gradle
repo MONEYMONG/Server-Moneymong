@@ -1,0 +1,33 @@
+// entity, repository, service와 service가 쓰는 DTO, 인증(토큰 발급, OAuth 로그인)
+apply plugin: 'java-library'
+
+dependencies {
+	api project(':common')
+
+	api 'org.springframework.boot:spring-boot-starter-data-jpa'
+	api 'org.springframework.boot:spring-boot-starter-data-redis'
+	api 'org.springframework.boot:spring-boot-starter-validation'
+	api 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// JWT
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	implementation 'org.bouncycastle:bcprov-jdk18on:1.75'
+	implementation 'org.bouncycastle:bcpkix-jdk18on:1.75'
+	implementation "com.auth0:java-jwt:4.4.0"
+
+	// QueryDSL. Q클래스는 build/generated/sources/annotationProcessor 아래에 생성된다.
+	api "com.querydsl:querydsl-jpa:5.0.0:jakarta"
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+	implementation 'org.apache.commons:commons-lang3'
+	// DTO의 @Schema. api module의 springdoc 2.1.0이 쓰는 버전과 맞춘다.
+	implementation 'io.swagger.core.v3:swagger-annotations-jakarta:2.2.9'
+
+	implementation platform("com.fasterxml.jackson:jackson-bom:2.14.0")
+	implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+}

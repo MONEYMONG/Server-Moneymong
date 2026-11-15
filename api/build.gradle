@@ -1,0 +1,43 @@
+// 실행 module. controller, controller 전용 DTO, security filter, config를 둔다.
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+	implementation project(':domain')
+
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	// mysql
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// Prometheus
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+	// Swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
+	// Cloud
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	implementation platform("com.fasterxml.jackson:jackson-bom:2.14.0")
+	implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+
+	// P6spy
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
+
+	// 패키지 의존 규칙 검사
+	testImplementation 'com.tngtech.archunit:archunit-junit5:1.4.1'
+}
+
+// Dockerfile과 배포 workflow가 쓰는 jar 이름(moneymong-0.0.1.jar)을 유지한다.
+tasks.named('bootJar') {
+	archiveBaseName = 'moneymong'
+}
+
+// 기존처럼 프로젝트 루트의 .env를 읽도록 실행 경로를 루트로 맞춘다.
+tasks.named('bootRun') {
+	workingDir = rootProject.projectDir
+}
