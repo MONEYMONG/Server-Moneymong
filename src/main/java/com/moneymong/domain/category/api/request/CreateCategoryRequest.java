@@ -1,4 +1,4 @@
-package com.moneymong.domain.agency.api.request;
+package com.moneymong.domain.category.api.request;
 
 public record CreateCategoryRequest(
     Long agencyId,
