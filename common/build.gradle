@@ -1,0 +1,5 @@
+// 모든 module이 공유하는 예외, 상수, 유틸. domain과 web 계층을 알면 안 된다.
+dependencies {
+	implementation 'org.springframework:spring-web'
+	implementation 'org.apache.commons:commons-lang3'
+}
