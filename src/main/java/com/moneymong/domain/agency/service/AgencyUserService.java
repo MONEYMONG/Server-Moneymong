@@ -1,7 +1,7 @@
 package com.moneymong.domain.agency.service;
 
-import com.moneymong.domain.agency.api.request.BlockAgencyUserRequest;
-import com.moneymong.domain.agency.api.request.UpdateAgencyUserRoleRequest;
+import com.moneymong.domain.agency.service.dto.request.BlockAgencyUserRequest;
+import com.moneymong.domain.agency.service.dto.request.UpdateAgencyUserRoleRequest;
 import com.moneymong.domain.agency.entity.Agency;
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;

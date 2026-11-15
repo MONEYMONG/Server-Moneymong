@@ -7,9 +7,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
-import com.moneymong.domain.user.api.request.CreateUserUniversityRequest;
-import com.moneymong.domain.user.api.request.UpdateUserUniversityRequest;
-import com.moneymong.domain.user.api.response.UserUniversityResponse;
+import com.moneymong.domain.user.service.dto.request.CreateUserUniversityRequest;
+import com.moneymong.domain.user.service.dto.request.UpdateUserUniversityRequest;
+import com.moneymong.domain.user.service.dto.response.UserUniversityResponse;
 import com.moneymong.domain.user.entity.UserUniversity;
 import com.moneymong.domain.user.repository.UserUniversityRepository;
 import com.moneymong.global.exception.custom.BadRequestException;

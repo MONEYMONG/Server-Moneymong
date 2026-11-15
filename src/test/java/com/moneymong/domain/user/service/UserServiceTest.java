@@ -8,7 +8,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.never;
 
-import com.moneymong.domain.user.api.response.UserProfileResponse;
+import com.moneymong.domain.user.service.dto.response.UserProfileResponse;
 import com.moneymong.domain.user.entity.AppleUser;
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.domain.user.entity.UserUniversity;

@@ -9,9 +9,9 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
 import com.moneymong.domain.category.entity.Category;
-import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
-import com.moneymong.domain.ledger.api.response.LedgerDocumentInfoView;
-import com.moneymong.domain.ledger.api.response.LedgerReceiptInfoView;
+import com.moneymong.domain.ledger.service.dto.response.LedgerDetailInfoView;
+import com.moneymong.domain.ledger.service.dto.response.LedgerDocumentInfoView;
+import com.moneymong.domain.ledger.service.dto.response.LedgerReceiptInfoView;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.LedgerDocument;
 import com.moneymong.domain.ledger.entity.LedgerReceipt;

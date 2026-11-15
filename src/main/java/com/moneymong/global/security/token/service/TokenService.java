@@ -2,7 +2,7 @@ package com.moneymong.global.security.token.service;
 
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.global.security.oauth.dto.AuthUserInfo;
-import com.moneymong.global.security.token.api.response.TokenResponse;
+import com.moneymong.global.security.token.service.dto.response.TokenResponse;
 import com.moneymong.global.security.token.dto.Tokens;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthenticationToken;

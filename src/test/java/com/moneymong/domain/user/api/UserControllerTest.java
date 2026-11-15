@@ -10,9 +10,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.moneymong.domain.user.api.request.LoginRequest;
-import com.moneymong.domain.user.api.response.LoginSuccessResponse;
-import com.moneymong.domain.user.api.response.UserProfileResponse;
+import com.moneymong.domain.user.service.dto.request.LoginRequest;
+import com.moneymong.domain.user.service.dto.response.LoginSuccessResponse;
+import com.moneymong.domain.user.service.dto.response.UserProfileResponse;
 import com.moneymong.domain.user.service.UserFacadeService;
 import com.moneymong.domain.user.service.UserService;
 import com.moneymong.global.exception.custom.NotFoundException;

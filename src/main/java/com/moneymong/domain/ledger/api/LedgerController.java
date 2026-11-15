@@ -1,13 +1,13 @@
 package com.moneymong.domain.ledger.api;
 
-import com.moneymong.domain.ledger.api.request.CreateLedgerRequest;
+import com.moneymong.domain.ledger.service.dto.request.CreateLedgerRequest;
 import com.moneymong.domain.ledger.api.request.LedgerReportRequest;
 import com.moneymong.domain.ledger.api.request.SearchLedgerFilterRequest;
 import com.moneymong.domain.ledger.api.request.SearchLedgerRequest;
-import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
-import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
-import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoView;
-import com.moneymong.domain.ledger.api.response.report.LedgerReportResponse;
+import com.moneymong.domain.ledger.service.dto.request.UpdateLedgerRequest;
+import com.moneymong.domain.ledger.service.dto.response.LedgerDetailInfoView;
+import com.moneymong.domain.ledger.service.dto.response.ledger.LedgerInfoView;
+import com.moneymong.domain.ledger.service.dto.response.report.LedgerReportResponse;
 import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.ledger.service.reader.LedgerReader;
 import com.moneymong.domain.ledger.service.reader.LedgerReportReader;

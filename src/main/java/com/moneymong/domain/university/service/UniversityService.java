@@ -2,8 +2,8 @@ package com.moneymong.domain.university.service;
 
 
 import com.moneymong.domain.university.University;
-import com.moneymong.domain.university.api.response.SearchUniversityResponse;
-import com.moneymong.domain.university.api.response.UniversityResponse;
+import com.moneymong.domain.university.service.dto.response.SearchUniversityResponse;
+import com.moneymong.domain.university.service.dto.response.UniversityResponse;
 import com.moneymong.domain.university.repository.UniversityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

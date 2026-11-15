@@ -9,7 +9,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moneymong.domain.user.api.request.LoginRequest;
+import com.moneymong.domain.user.service.dto.request.LoginRequest;
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.domain.user.repository.UserRepository;
 import com.moneymong.global.exception.custom.NotFoundException;

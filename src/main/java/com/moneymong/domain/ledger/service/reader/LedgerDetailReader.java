@@ -1,6 +1,6 @@
 package com.moneymong.domain.ledger.service.reader;
 
-import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
+import com.moneymong.domain.ledger.service.dto.response.LedgerDetailInfoView;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.LedgerDocument;
 import com.moneymong.domain.ledger.entity.LedgerReceipt;

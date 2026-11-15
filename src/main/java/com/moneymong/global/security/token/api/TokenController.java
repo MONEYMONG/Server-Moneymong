@@ -2,7 +2,7 @@ package com.moneymong.global.security.token.api;
 
 import com.moneymong.global.security.token.api.request.DeleteRefreshTokenRequest;
 import com.moneymong.global.security.token.api.request.RefreshAccessTokenRequest;
-import com.moneymong.global.security.token.api.response.TokenResponse;
+import com.moneymong.global.security.token.service.dto.response.TokenResponse;
 import com.moneymong.global.security.token.service.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -8,8 +8,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
-import com.moneymong.domain.ledger.api.response.LedgerReceiptInfoView;
+import com.moneymong.domain.ledger.service.dto.response.LedgerDetailInfoView;
+import com.moneymong.domain.ledger.service.dto.response.LedgerReceiptInfoView;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.ledger.service.manager.LedgerDetailService;
 import com.moneymong.domain.ledger.service.reader.LedgerDetailReader;

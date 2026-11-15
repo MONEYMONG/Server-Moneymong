@@ -98,9 +98,14 @@ def jacocoIncludes = [
 		'com/moneymong/global/version/VersionController*',
 ]
 
+// service 패키지 아래로 옮긴 request/response DTO는 측정에서 제외한다.
+def jacocoExcludes = [
+		'com/moneymong/**/service/dto/**',
+]
+
 def jacocoClassDirs = {
 	files(sourceSets.main.output.classesDirs.collect {
-		fileTree(dir: it, includes: jacocoIncludes)
+		fileTree(dir: it, includes: jacocoIncludes, excludes: jacocoExcludes)
 	})
 }
 

@@ -1,6 +1,6 @@
 package com.moneymong.domain.university.api;
 
-import com.moneymong.domain.university.api.response.SearchUniversityResponse;
+import com.moneymong.domain.university.service.dto.response.SearchUniversityResponse;
 import com.moneymong.domain.university.service.UniversityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

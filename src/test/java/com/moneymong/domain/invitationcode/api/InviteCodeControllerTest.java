@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.moneymong.domain.invitationcode.api.request.CertifyInvitationCodeRequest;
-import com.moneymong.domain.invitationcode.api.response.CertifyInvitationCodeResponse;
-import com.moneymong.domain.invitationcode.api.response.InvitationCodeResponse;
+import com.moneymong.domain.invitationcode.service.dto.request.CertifyInvitationCodeRequest;
+import com.moneymong.domain.invitationcode.service.dto.response.CertifyInvitationCodeResponse;
+import com.moneymong.domain.invitationcode.service.dto.response.InvitationCodeResponse;
 import com.moneymong.domain.invitationcode.service.InvitationCodeService;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
