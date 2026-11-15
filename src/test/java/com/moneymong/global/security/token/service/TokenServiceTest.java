@@ -85,6 +85,7 @@ class TokenServiceTest {
         assertThat(saved.getRole()).isEqualTo(ROLE);
         assertThat(saved.getExpiredAt())
                 .isBetween(before + REFRESH_TOKEN_EXPIRE_SECONDS * 1000, System.currentTimeMillis() + REFRESH_TOKEN_EXPIRE_SECONDS * 1000);
+        assertThat(saved.getTimeToLive()).isEqualTo(REFRESH_TOKEN_EXPIRE_SECONDS);
     }
 
     @Test
@@ -113,6 +114,28 @@ class TokenServiceTest {
         assertThat(response.getAccessToken()).isEqualTo("new-access");
         assertThat(response.getRefreshToken()).isNotEqualTo("old-refresh").isEqualTo(token.getToken());
         then(refreshTokenRepository).should().save(token);
+    }
+
+    @Test
+    @DisplayName("갱신된 리프레시 토큰은 만료 시각이 현재 기준으로 다시 설정되어 다음 재발급에도 사용할 수 있다.")
+    void refreshAgainAfterRenewal() {
+        RefreshToken token = refreshToken("old-refresh", System.currentTimeMillis() + ONE_DAY_MILLIS);
+        given(refreshTokenRepository.findByToken("old-refresh")).willReturn(Optional.of(token));
+        given(jwtTokenProvider.getAccessToken(USER_ID, ROLE)).willReturn("new-access");
+        long before = System.currentTimeMillis();
+
+        TokenResponse renewed = tokenService.getAccessTokensByRefreshToken("old-refresh");
+
+        assertThat(token.getExpiredAt())
+                .isBetween(before + REFRESH_TOKEN_EXPIRE_SECONDS * 1000, System.currentTimeMillis() + REFRESH_TOKEN_EXPIRE_SECONDS * 1000);
+        assertThat(token.getTimeToLive()).isEqualTo(REFRESH_TOKEN_EXPIRE_SECONDS);
+
+        // 갱신된 토큰으로 다시 재발급해도 만료 예외가 발생하지 않는다.
+        given(refreshTokenRepository.findByToken(renewed.getRefreshToken())).willReturn(Optional.of(token));
+        TokenResponse again = tokenService.getAccessTokensByRefreshToken(renewed.getRefreshToken());
+
+        assertThat(again.getAccessToken()).isEqualTo("new-access");
+        assertThat(again.getRefreshToken()).isEqualTo(renewed.getRefreshToken());
     }
 
     @Test

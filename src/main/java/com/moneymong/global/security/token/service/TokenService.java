@@ -48,13 +48,12 @@ public class TokenService {
     }
 
     private String createRefreshToken(Long userId, String role) {
-        long expiredAtInMillis = System.currentTimeMillis() + refreshTokenExpireSeconds * 1000;
-
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(UUID.randomUUID().toString())
                 .userId(userId)
                 .role(role)
-                .expiredAt(expiredAtInMillis)
+                .expiredAt(refreshTokenExpiredAtFromNow())
+                .timeToLive(refreshTokenExpireSeconds)
                 .build();
 
         return refreshTokenRepository.save(refreshToken).getToken();
@@ -68,13 +67,17 @@ public class TokenService {
 
         if (token.getExpiredAt() < System.currentTimeMillis() + ONE_WEEK_IN_MILLI_SECONDS) {
             String renewalRefreshToken = UUID.randomUUID().toString();
-            token.renew(renewalRefreshToken, refreshTokenExpireSeconds);
+            token.renew(renewalRefreshToken, refreshTokenExpiredAtFromNow(), refreshTokenExpireSeconds);
 
             refreshTokenRepository.save(token);
         }
 
         String accessToken = createAccessToken(token.getUserId(), token.getRole());
         return new TokenResponse(accessToken, token.getToken());
+    }
+
+    private long refreshTokenExpiredAtFromNow() {
+        return System.currentTimeMillis() + refreshTokenExpireSeconds * 1000;
     }
 
     private void validateExpiration(RefreshToken token) {
