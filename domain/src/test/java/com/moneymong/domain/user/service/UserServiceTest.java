@@ -8,6 +8,8 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.never;
 
+import com.moneymong.domain.user.service.dto.request.UpdateNotificationSettingRequest;
+import com.moneymong.domain.user.service.dto.response.NotificationSettingResponse;
 import com.moneymong.domain.user.service.dto.response.UserProfileResponse;
 import com.moneymong.domain.user.entity.AppleUser;
 import com.moneymong.domain.user.entity.User;
@@ -230,6 +232,49 @@ class UserServiceTest {
                 .email("user@example.com")
                 .appleRefreshToken(appleRefreshToken)
                 .build();
+    }
+
+    @Test
+    @DisplayName("알림 설정을 조회하면 회원의 알림 수신 여부를 반환한다.")
+    void getNotificationSetting() {
+        // given
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(user(USER_ID, "머니몽")));
+
+        // when
+        NotificationSettingResponse response = userService.getNotificationSetting(USER_ID);
+
+        // then
+        assertThat(response.isPushEnabled()).isTrue();
+    }
+
+    @Test
+    @DisplayName("알림 설정을 바꾸면 회원의 알림 수신 여부를 바꾸고 바뀐 값을 반환한다.")
+    void updateNotificationSetting() {
+        // given
+        User user = user(USER_ID, "머니몽");
+        given(userRepository.findById(USER_ID)).willReturn(Optional.of(user));
+
+        // when
+        NotificationSettingResponse response = userService.updateNotificationSetting(
+                USER_ID, new UpdateNotificationSettingRequest(false)
+        );
+
+        // then
+        assertThat(user.isPushEnabled()).isFalse();
+        assertThat(response.isPushEnabled()).isFalse();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 회원의 알림 설정은 조회하거나 바꿀 수 없다.")
+    void notificationSettingOfNotFoundUser() {
+        // given
+        given(userRepository.findById(USER_ID)).willReturn(Optional.empty());
+
+        // when, then
+        assertThatThrownBy(() -> userService.getNotificationSetting(USER_ID))
+                .isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> userService.updateNotificationSetting(USER_ID, new UpdateNotificationSettingRequest(true)))
+                .isInstanceOf(NotFoundException.class);
     }
 
     private User user(Long id, String nickname) {

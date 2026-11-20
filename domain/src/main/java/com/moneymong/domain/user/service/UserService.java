@@ -1,5 +1,7 @@
 package com.moneymong.domain.user.service;
 
+import com.moneymong.domain.user.service.dto.request.UpdateNotificationSettingRequest;
+import com.moneymong.domain.user.service.dto.response.NotificationSettingResponse;
 import com.moneymong.domain.user.service.dto.response.UserProfileResponse;
 import com.moneymong.domain.user.entity.AppleUser;
 import com.moneymong.domain.user.entity.User;
@@ -77,6 +79,24 @@ public class UserService {
 				.orElseGet(UserUniversity::new);
 
 		return UserProfileResponse.from(user, userUniversity);
+	}
+
+	@Transactional(readOnly = true)
+	public NotificationSettingResponse getNotificationSetting(Long userId) {
+		return NotificationSettingResponse.from(getUser(userId));
+	}
+
+	@Transactional
+	public NotificationSettingResponse updateNotificationSetting(Long userId, UpdateNotificationSettingRequest request) {
+		User user = getUser(userId);
+		user.updatePushEnabled(request.getPushEnabled());
+
+		return NotificationSettingResponse.from(user);
+	}
+
+	private User getUser(Long userId) {
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 	}
 
 	@Transactional

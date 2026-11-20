@@ -74,3 +74,11 @@ agency:
 app:
   minimum:
     version: ${APP_MINIMUM_VERSION}
+
+# 알림(FCM). credentials가 비어 있으면 실제로 보내지 않는다.
+notification:
+  fcm:
+    # 서비스 계정 JSON을 base64로 인코딩한 값
+    credentials: ${FIREBASE_CREDENTIALS:}
+    # 앱이 만든 Android 알림 채널 ID와 같아야 한다.
+    android-channel-id: moneymong_default

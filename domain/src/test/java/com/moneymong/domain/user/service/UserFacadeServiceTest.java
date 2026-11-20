@@ -22,6 +22,7 @@ import com.moneymong.domain.user.oauth.dto.OAuthUserInfo;
 import com.moneymong.domain.user.service.oauth.OAuthService;
 import com.moneymong.domain.auth.dto.Tokens;
 import com.moneymong.domain.auth.service.TokenService;
+import com.moneymong.domain.user.event.UserWithdrawnEvent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 @ExtendWith(MockitoExtension.class)
 class UserFacadeServiceTest {
@@ -48,6 +50,8 @@ class UserFacadeServiceTest {
     private UserUniversityService userUniversityService;
     @Mock
     private AgencyUserService agencyUserService;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private UserFacadeService userFacadeService;
@@ -89,17 +93,18 @@ class UserFacadeServiceTest {
     }
 
     @Test
-    @DisplayName("회원 탈퇴 시 OAuth 연동 해제, 회원, 대학 정보, 소속 정보 순서로 삭제한다.")
+    @DisplayName("회원 탈퇴 시 OAuth 연동 해제, 회원, 대학 정보, 소속 정보 순서로 삭제하고 탈퇴 이벤트를 발행한다.")
     void delete() {
         // when
         userFacadeService.delete(USER_ID);
 
         // then
-        InOrder inOrder = inOrder(oAuthService, userService, userUniversityService, agencyUserService);
+        InOrder inOrder = inOrder(oAuthService, userService, userUniversityService, agencyUserService, eventPublisher);
         inOrder.verify(oAuthService).revoke(USER_ID);
         inOrder.verify(userService).delete(USER_ID);
         inOrder.verify(userUniversityService).delete(USER_ID);
         inOrder.verify(agencyUserService).deleteAll(USER_ID);
+        inOrder.verify(eventPublisher).publishEvent(new UserWithdrawnEvent(USER_ID));
     }
 
     @Test
@@ -115,5 +120,6 @@ class UserFacadeServiceTest {
                 .isEqualTo(ErrorCode.USER_NOT_FOUND);
         then(userUniversityService).should(never()).delete(anyLong());
         then(agencyUserService).should(never()).deleteAll(anyLong());
+        then(eventPublisher).shouldHaveNoInteractions();
     }
 }

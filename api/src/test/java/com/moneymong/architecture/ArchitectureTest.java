@@ -4,10 +4,14 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 import static com.tngtech.archunit.library.freeze.FreezingArchRule.freeze;
 
+import com.moneymong.domain.notification.push.PushMessage;
+import com.moneymong.domain.notification.push.PushSender;
+import com.moneymong.domain.notification.service.NotificationService;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import java.util.List;
 
 /**
  * 패키지 의존 방향 규칙.
@@ -65,4 +69,10 @@ class ArchitectureTest {
             noClasses().that().resideInAPackage("..service..")
                     .should().dependOnClassesThat().resideInAPackage("..api..")
     );
+
+    // 알림 설정 확인, 이력 저장, 무효 토큰 정리를 빠뜨리지 않도록 발송은 NotificationService로만 한다.
+    @ArchTest
+    static final ArchRule PushSender로_발송하는_곳은_NotificationService뿐이다 =
+            noClasses().that().doNotBelongToAnyOf(NotificationService.class)
+                    .should().callMethod(PushSender.class, "send", List.class, PushMessage.class);
 }
