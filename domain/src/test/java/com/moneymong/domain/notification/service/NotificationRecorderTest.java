@@ -21,7 +21,6 @@ import com.moneymong.domain.notification.repository.DeviceTokenRepository;
 import com.moneymong.domain.notification.repository.NotificationHistoryRepository;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,8 +34,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 class NotificationRecorderTest {
 
     private static final Long USER_ID = 1L;
-    private static final PushMessage MESSAGE = new PushMessage(
-            NotificationType.TEST, "제목", "본문", PushLanding.ledger(7L), Map.of("extra", "value")
+    private static final PushMessage MESSAGE = PushMessage.of(
+            NotificationType.TEST, "제목", "본문", PushLanding.ledger(7L)
     );
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -125,7 +124,6 @@ class NotificationRecorderTest {
         JsonNode json = objectMapper.readTree(payload);
         assertThat(json.get("title").asText()).isEqualTo("제목");
         assertThat(json.get("body").asText()).isEqualTo("본문");
-        assertThat(json.get("data").get("extra").asText()).isEqualTo("value");
         assertThat(json.get("data").get("screen").asText()).isEqualTo("LEDGER");
         assertThat(json.get("data").get("agencyId").asText()).isEqualTo("7");
         assertThat(json.get("data").get("type").asText()).isEqualTo("TEST");
