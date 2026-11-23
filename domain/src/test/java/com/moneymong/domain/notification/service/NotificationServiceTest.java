@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
@@ -12,6 +13,7 @@ import com.moneymong.domain.notification.entity.DeviceToken;
 import com.moneymong.domain.notification.entity.enums.DevicePlatform;
 import com.moneymong.domain.notification.entity.enums.NotificationStatus;
 import com.moneymong.domain.notification.entity.enums.NotificationType;
+import com.moneymong.domain.notification.push.PushLanding;
 import com.moneymong.domain.notification.push.PushMessage;
 import com.moneymong.domain.notification.push.PushResult;
 import com.moneymong.domain.notification.push.PushSender;
@@ -179,11 +181,31 @@ class NotificationServiceTest {
                 .willReturn(List.of(PushResult.success("message-2")));
 
         // when
-        TestNotificationResponse response = notificationService.sendTest(USER_ID, new SendTestNotificationRequest("device-2"));
+        TestNotificationResponse response = notificationService.sendTest(USER_ID, new SendTestNotificationRequest("device-2", null));
 
         // then
         assertThat(response.getDeliveries()).extracting(NotificationDeliveryResponse::getDeviceId)
                 .containsExactly("device-2");
+    }
+
+    @Test
+    @DisplayName("테스트 알림에 agencyId를 주면 그 소속의 장부 화면으로 이동하도록 보낸다.")
+    void sendTestWithLedgerLanding() {
+        // given
+        DeviceToken android = deviceToken(10L, "device-1", "token-1", DevicePlatform.ANDROID);
+        PushMessage expected = NotificationService.TEST_MESSAGE.withLanding(PushLanding.ledger(7L));
+        given(testSendRateLimiter.tryAcquire(USER_ID)).willReturn(true);
+        given(deviceTokenRepository.findAllByUserId(USER_ID)).willReturn(List.of(android));
+        given(pushSender.send(List.of(new PushTarget("token-1", DevicePlatform.ANDROID)), expected))
+                .willReturn(List.of(PushResult.success("message-1")));
+
+        // when
+        TestNotificationResponse response = notificationService.sendTest(USER_ID, new SendTestNotificationRequest(null, 7L));
+
+        // then
+        assertThat(response.getDeliveries()).extracting(NotificationDeliveryResponse::getStatus)
+                .containsExactly(NotificationStatus.SUCCESS);
+        then(notificationRecorder).should().recordDelivered(eq(USER_ID), eq(expected), anyList(), anyList());
     }
 
     @Test
@@ -195,7 +217,7 @@ class NotificationServiceTest {
         given(deviceTokenRepository.findAllByUserId(USER_ID)).willReturn(List.of(android));
 
         // when, then
-        assertThatThrownBy(() -> notificationService.sendTest(USER_ID, new SendTestNotificationRequest("other-device")))
+        assertThatThrownBy(() -> notificationService.sendTest(USER_ID, new SendTestNotificationRequest("other-device", null)))
                 .isInstanceOf(NotFoundException.class)
                 .extracting("errorCode").isEqualTo(ErrorCode.NOTIFICATION_DEVICE_NOT_FOUND);
         then(pushSender).shouldHaveNoInteractions();

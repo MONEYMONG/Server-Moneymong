@@ -14,6 +14,7 @@ import com.moneymong.domain.notification.entity.NotificationHistory;
 import com.moneymong.domain.notification.entity.enums.DevicePlatform;
 import com.moneymong.domain.notification.entity.enums.NotificationStatus;
 import com.moneymong.domain.notification.entity.enums.NotificationType;
+import com.moneymong.domain.notification.push.PushLanding;
 import com.moneymong.domain.notification.push.PushMessage;
 import com.moneymong.domain.notification.push.PushResult;
 import com.moneymong.domain.notification.repository.DeviceTokenRepository;
@@ -35,7 +36,7 @@ class NotificationRecorderTest {
 
     private static final Long USER_ID = 1L;
     private static final PushMessage MESSAGE = new PushMessage(
-            NotificationType.TEST, "제목", "본문", Map.of("link", "moneymong://home")
+            NotificationType.TEST, "제목", "본문", PushLanding.ledger(7L), Map.of("extra", "value")
     );
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -122,7 +123,9 @@ class NotificationRecorderTest {
         JsonNode json = objectMapper.readTree(payload);
         assertThat(json.get("title").asText()).isEqualTo("제목");
         assertThat(json.get("body").asText()).isEqualTo("본문");
-        assertThat(json.get("data").get("link").asText()).isEqualTo("moneymong://home");
+        assertThat(json.get("data").get("extra").asText()).isEqualTo("value");
+        assertThat(json.get("data").get("screen").asText()).isEqualTo("LEDGER");
+        assertThat(json.get("data").get("agencyId").asText()).isEqualTo("7");
         assertThat(json.get("data").get("type").asText()).isEqualTo("TEST");
     }
 

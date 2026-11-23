@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 class FirebaseConfigTest {
 
-    private static final String CHANNEL_ID = "moneymong_default";
     private static final String ANDROID_PROJECT_ID = "moneymong-test";
     private static final String IOS_PROJECT_ID = "ios-moneymong-test";
 
@@ -34,8 +33,8 @@ class FirebaseConfigTest {
     @Test
     @DisplayName("Android·iOS 인증 정보가 모두 없으면 실제로 보내지 않는 NoOpPushSender를 쓴다.")
     void noCredentials() {
-        assertThat(firebaseConfig.pushSender("", "", CHANNEL_ID)).isInstanceOf(NoOpPushSender.class);
-        assertThat(firebaseConfig.pushSender("  ", "  ", CHANNEL_ID)).isInstanceOf(NoOpPushSender.class);
+        assertThat(firebaseConfig.pushSender("", "")).isInstanceOf(NoOpPushSender.class);
+        assertThat(firebaseConfig.pushSender("  ", "  ")).isInstanceOf(NoOpPushSender.class);
         assertThat(FirebaseApp.getApps()).isEmpty();
     }
 
@@ -47,7 +46,7 @@ class FirebaseConfigTest {
         String iosCredentials = encodedServiceAccount(IOS_PROJECT_ID);
 
         // when
-        PushSender pushSender = firebaseConfig.pushSender(androidCredentials, iosCredentials, CHANNEL_ID);
+        PushSender pushSender = firebaseConfig.pushSender(androidCredentials, iosCredentials);
         FirebaseApp androidAgain = FirebaseConfig.initializeApp(DevicePlatform.ANDROID, androidCredentials);
 
         // then
@@ -64,7 +63,7 @@ class FirebaseConfigTest {
     @DisplayName("한 플랫폼의 인증 정보만 있으면 그 플랫폼만 FCM으로 보낸다.")
     void withOnePlatformCredentials() throws Exception {
         // when
-        PushSender pushSender = firebaseConfig.pushSender(encodedServiceAccount(ANDROID_PROJECT_ID), "", CHANNEL_ID);
+        PushSender pushSender = firebaseConfig.pushSender(encodedServiceAccount(ANDROID_PROJECT_ID), "");
 
         // then
         assertThat(pushSender).isInstanceOf(FcmPushSender.class);
@@ -78,10 +77,10 @@ class FirebaseConfigTest {
         String notServiceAccount = Base64.getEncoder().encodeToString("{}".getBytes(StandardCharsets.UTF_8));
         String valid = encodedServiceAccount(ANDROID_PROJECT_ID);
 
-        assertThatThrownBy(() -> firebaseConfig.pushSender(notBase64, "", CHANNEL_ID))
+        assertThatThrownBy(() -> firebaseConfig.pushSender(notBase64, ""))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageStartingWith("FIREBASE_CREDENTIALS_ANDROID");
-        assertThatThrownBy(() -> firebaseConfig.pushSender(valid, notServiceAccount, CHANNEL_ID))
+        assertThatThrownBy(() -> firebaseConfig.pushSender(valid, notServiceAccount))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageStartingWith("FIREBASE_CREDENTIALS_IOS");
     }

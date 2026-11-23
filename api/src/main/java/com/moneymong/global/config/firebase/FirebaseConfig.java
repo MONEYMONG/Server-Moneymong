@@ -42,8 +42,7 @@ public class FirebaseConfig {
     @Bean
     public PushSender pushSender(
             @Value("${notification.fcm.credentials.android:}") String androidCredentials,
-            @Value("${notification.fcm.credentials.ios:}") String iosCredentials,
-            @Value("${notification.fcm.android-channel-id}") String androidChannelId
+            @Value("${notification.fcm.credentials.ios:}") String iosCredentials
     ) {
         Map<DevicePlatform, String> encodedCredentials = new EnumMap<>(DevicePlatform.class);
         encodedCredentials.put(DevicePlatform.ANDROID, androidCredentials);
@@ -63,7 +62,7 @@ public class FirebaseConfig {
         if (firebaseMessagings.isEmpty()) {
             return new NoOpPushSender();
         }
-        return new FcmPushSender(firebaseMessagings, new FcmMessageFactory(androidChannelId));
+        return new FcmPushSender(firebaseMessagings, new FcmMessageFactory());
     }
 
     static FirebaseApp initializeApp(DevicePlatform platform, String encodedCredentials) {

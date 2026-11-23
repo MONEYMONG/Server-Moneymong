@@ -36,7 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class FcmPushSenderTest {
 
     private static final PushMessage MESSAGE = PushMessage.of(NotificationType.TEST, "제목", "본문");
-    private static final FcmMessageFactory MESSAGE_FACTORY = new FcmMessageFactory("channel");
+    private static final FcmMessageFactory MESSAGE_FACTORY = new FcmMessageFactory();
 
     @Mock
     private FirebaseMessaging androidMessaging;

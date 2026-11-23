@@ -82,5 +82,3 @@ notification:
     credentials:
       android: ${FIREBASE_CREDENTIALS_ANDROID:}
       ios: ${FIREBASE_CREDENTIALS_IOS:}
-    # 앱이 만든 Android 알림 채널 ID와 같아야 한다.
-    android-channel-id: moneymong_default

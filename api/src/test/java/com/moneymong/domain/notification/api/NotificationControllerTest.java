@@ -133,6 +133,31 @@ class NotificationControllerTest extends ControllerTestSupport {
     }
 
     @Test
+    @DisplayName("agencyId를 주면 장부 화면으로 이동하는 테스트 알림을 보낸다.")
+    void sendTestNotificationWithAgencyId() throws Exception {
+        given(notificationService.sendTest(eq(USER_ID), any(SendTestNotificationRequest.class)))
+                .willReturn(new TestNotificationResponse(List.of()));
+
+        mockMvc.perform(post("/api/v1/notifications/test")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(Map.of("agencyId", 7))))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<SendTestNotificationRequest> captor = ArgumentCaptor.forClass(SendTestNotificationRequest.class);
+        then(notificationService).should().sendTest(eq(USER_ID), captor.capture());
+        assertThat(captor.getValue().getAgencyId()).isEqualTo(7L);
+    }
+
+    @Test
+    @DisplayName("agencyId가 1보다 작으면 400을 반환한다.")
+    void sendTestNotificationWithInvalidAgencyId() throws Exception {
+        mockMvc.perform(post("/api/v1/notifications/test")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(Map.of("agencyId", 0))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("테스트 알림을 너무 자주 보내면 429를 반환한다.")
     void sendTestNotificationTooOften() throws Exception {
         given(notificationService.sendTest(eq(USER_ID), any(SendTestNotificationRequest.class)))

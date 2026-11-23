@@ -85,7 +85,7 @@ public class NotificationRecorder {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("title", message.title());
         payload.put("body", message.body());
-        payload.put("data", message.dataWithType());
+        payload.put("data", message.appData());
 
         try {
             return objectMapper.writeValueAsString(payload);

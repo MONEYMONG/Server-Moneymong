@@ -51,7 +51,8 @@ public class NotificationController {
 
     @Operation(
             summary = "내 기기로 테스트 알림 발송",
-            description = "deviceId를 비우면 내 모든 기기로 보낸다. 알림 설정과 관계없이 보내며, 10초에 한 번 보낼 수 있다."
+            description = "deviceId를 비우면 내 모든 기기로 보낸다. agencyId를 넣으면 알림을 눌렀을 때 그 소속의 장부 화면(screen=LEDGER)으로 이동한다. "
+                    + "알림 설정과 관계없이 보내며, 10초에 한 번 보낼 수 있다."
     )
     @PostMapping("/test")
     public TestNotificationResponse sendTestNotification(

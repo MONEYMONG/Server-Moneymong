@@ -97,7 +97,7 @@ public class FcmPushSender implements PushSender {
             PushMessage message
     ) {
         List<Message> messages = tokens.stream()
-                .map(token -> messageFactory.create(token, message))
+                .map(token -> messageFactory.create(token, platform, message))
                 .toList();
 
         try {

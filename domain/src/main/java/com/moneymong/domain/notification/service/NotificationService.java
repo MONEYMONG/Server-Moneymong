@@ -3,6 +3,7 @@ package com.moneymong.domain.notification.service;
 import com.moneymong.domain.notification.entity.DeviceToken;
 import com.moneymong.domain.notification.entity.enums.NotificationStatus;
 import com.moneymong.domain.notification.entity.enums.NotificationType;
+import com.moneymong.domain.notification.push.PushLanding;
 import com.moneymong.domain.notification.push.PushMessage;
 import com.moneymong.domain.notification.push.PushResult;
 import com.moneymong.domain.notification.push.PushSender;
@@ -67,7 +68,10 @@ public class NotificationService {
         }
 
         List<DeviceToken> deviceTokens = findTestTargets(userId, request.getDeviceId());
-        return new TestNotificationResponse(dispatch(userId, TEST_MESSAGE, deviceTokens));
+        PushMessage message = request.getAgencyId() == null
+                ? TEST_MESSAGE
+                : TEST_MESSAGE.withLanding(PushLanding.ledger(request.getAgencyId()));
+        return new TestNotificationResponse(dispatch(userId, message, deviceTokens));
     }
 
     private List<DeviceToken> findTestTargets(Long userId, String deviceId) {
