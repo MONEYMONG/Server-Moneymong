@@ -2,9 +2,11 @@ package com.moneymong.global.notification.fcm;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.moneymong.domain.notification.entity.enums.DevicePlatform;
 import com.moneymong.domain.notification.entity.enums.NotificationType;
 import com.moneymong.domain.notification.push.PushMessage;
 import com.moneymong.domain.notification.push.PushResult;
+import com.moneymong.domain.notification.push.PushTarget;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +18,8 @@ class NoOpPushSenderTest {
     void send() {
         // when
         List<PushResult> results = new NoOpPushSender().send(
-                List.of("t1", "t2"), PushMessage.of(NotificationType.TEST, "제목", "본문")
+                List.of(new PushTarget("t1", DevicePlatform.ANDROID), new PushTarget("t2", DevicePlatform.IOS)),
+                PushMessage.of(NotificationType.TEST, "제목", "본문")
         );
 
         // then

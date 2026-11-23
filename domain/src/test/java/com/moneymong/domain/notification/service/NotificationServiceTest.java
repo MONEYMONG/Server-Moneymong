@@ -15,6 +15,7 @@ import com.moneymong.domain.notification.entity.enums.NotificationType;
 import com.moneymong.domain.notification.push.PushMessage;
 import com.moneymong.domain.notification.push.PushResult;
 import com.moneymong.domain.notification.push.PushSender;
+import com.moneymong.domain.notification.push.PushTarget;
 import com.moneymong.domain.notification.repository.DeviceTokenRepository;
 import com.moneymong.domain.notification.service.dto.request.SendTestNotificationRequest;
 import com.moneymong.domain.notification.service.dto.response.NotificationDeliveryResponse;
@@ -56,7 +57,7 @@ class NotificationServiceTest {
     private NotificationService notificationService;
 
     @Test
-    @DisplayName("알림을 켠 회원의 모든 기기로 보내고 기기별 결과를 기록한다.")
+    @DisplayName("알림을 켠 회원의 모든 기기로 플랫폼과 함께 보내고 기기별 결과를 기록한다.")
     void send() {
         // given
         DeviceToken android = deviceToken(10L, "device-1", "token-1", DevicePlatform.ANDROID);
@@ -64,7 +65,10 @@ class NotificationServiceTest {
         List<PushResult> results = List.of(PushResult.success("message-1"), PushResult.failure("UNREGISTERED", true));
         given(userRepository.findById(USER_ID)).willReturn(Optional.of(user(true)));
         given(deviceTokenRepository.findAllByUserId(USER_ID)).willReturn(List.of(android, ios));
-        given(pushSender.send(List.of("token-1", "token-2"), MESSAGE)).willReturn(results);
+        given(pushSender.send(List.of(
+                new PushTarget("token-1", DevicePlatform.ANDROID),
+                new PushTarget("token-2", DevicePlatform.IOS)
+        ), MESSAGE)).willReturn(results);
 
         // when
         List<NotificationDeliveryResponse> responses = notificationService.send(USER_ID, MESSAGE);
@@ -151,7 +155,7 @@ class NotificationServiceTest {
         DeviceToken android = deviceToken(10L, "device-1", "token-1", DevicePlatform.ANDROID);
         given(testSendRateLimiter.tryAcquire(USER_ID)).willReturn(true);
         given(deviceTokenRepository.findAllByUserId(USER_ID)).willReturn(List.of(android));
-        given(pushSender.send(List.of("token-1"), NotificationService.TEST_MESSAGE))
+        given(pushSender.send(List.of(new PushTarget("token-1", DevicePlatform.ANDROID)), NotificationService.TEST_MESSAGE))
                 .willReturn(List.of(PushResult.success("message-1")));
 
         // when
@@ -171,7 +175,7 @@ class NotificationServiceTest {
         DeviceToken ios = deviceToken(11L, "device-2", "token-2", DevicePlatform.IOS);
         given(testSendRateLimiter.tryAcquire(USER_ID)).willReturn(true);
         given(deviceTokenRepository.findAllByUserId(USER_ID)).willReturn(List.of(android, ios));
-        given(pushSender.send(List.of("token-2"), NotificationService.TEST_MESSAGE))
+        given(pushSender.send(List.of(new PushTarget("token-2", DevicePlatform.IOS)), NotificationService.TEST_MESSAGE))
                 .willReturn(List.of(PushResult.success("message-2")));
 
         // when

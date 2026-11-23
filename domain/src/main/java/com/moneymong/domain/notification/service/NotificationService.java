@@ -6,6 +6,7 @@ import com.moneymong.domain.notification.entity.enums.NotificationType;
 import com.moneymong.domain.notification.push.PushMessage;
 import com.moneymong.domain.notification.push.PushResult;
 import com.moneymong.domain.notification.push.PushSender;
+import com.moneymong.domain.notification.push.PushTarget;
 import com.moneymong.domain.notification.repository.DeviceTokenRepository;
 import com.moneymong.domain.notification.service.dto.request.SendTestNotificationRequest;
 import com.moneymong.domain.notification.service.dto.response.NotificationDeliveryResponse;
@@ -90,13 +91,13 @@ public class NotificationService {
             return List.of(NotificationDeliveryResponse.notDelivered(NotificationStatus.NO_DEVICE));
         }
 
-        List<String> tokens = deviceTokens.stream()
-                .map(DeviceToken::getToken)
+        List<PushTarget> targets = deviceTokens.stream()
+                .map(deviceToken -> new PushTarget(deviceToken.getToken(), deviceToken.getPlatform()))
                 .toList();
-        List<PushResult> results = pushSender.send(tokens, message);
-        if (results.size() != tokens.size()) {
+        List<PushResult> results = pushSender.send(targets, message);
+        if (results.size() != targets.size()) {
             throw new IllegalStateException(
-                    "발송 결과 수가 토큰 수와 다르다. tokens=" + tokens.size() + " results=" + results.size()
+                    "발송 결과 수가 토큰 수와 다르다. tokens=" + targets.size() + " results=" + results.size()
             );
         }
 

@@ -14,11 +14,15 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MessagingErrorCode;
 import com.google.firebase.messaging.SendResponse;
+import com.moneymong.domain.notification.entity.enums.DevicePlatform;
 import com.moneymong.domain.notification.entity.enums.NotificationType;
 import com.moneymong.domain.notification.push.PushMessage;
 import com.moneymong.domain.notification.push.PushResult;
+import com.moneymong.domain.notification.push.PushTarget;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,15 +36,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class FcmPushSenderTest {
 
     private static final PushMessage MESSAGE = PushMessage.of(NotificationType.TEST, "제목", "본문");
+    private static final FcmMessageFactory MESSAGE_FACTORY = new FcmMessageFactory("channel");
 
     @Mock
-    private FirebaseMessaging firebaseMessaging;
+    private FirebaseMessaging androidMessaging;
+    @Mock
+    private FirebaseMessaging iosMessaging;
 
     private FcmPushSender fcmPushSender;
 
     @BeforeEach
     void setUp() {
-        fcmPushSender = new FcmPushSender(firebaseMessaging, new FcmMessageFactory("channel"));
+        fcmPushSender = new FcmPushSender(
+                Map.of(DevicePlatform.ANDROID, androidMessaging, DevicePlatform.IOS, iosMessaging),
+                MESSAGE_FACTORY
+        );
     }
 
     @Test
@@ -54,10 +64,10 @@ class FcmPushSenderTest {
                 failure(messagingException(MessagingErrorCode.UNAVAILABLE)),
                 failure(messagingException(MessagingErrorCode.INVALID_ARGUMENT))
         ));
-        given(firebaseMessaging.sendEach(anyList())).willReturn(batchResponse);
+        given(androidMessaging.sendEach(anyList())).willReturn(batchResponse);
 
         // when
-        List<PushResult> results = fcmPushSender.send(List.of("t1", "t2", "t3", "t4", "t5"), MESSAGE);
+        List<PushResult> results = fcmPushSender.send(android("t1", "t2", "t3", "t4", "t5"), MESSAGE);
 
         // then
         assertThat(results).containsExactly(
@@ -72,11 +82,67 @@ class FcmPushSenderTest {
 
     @Test
     @SuppressWarnings("unchecked")
+    @DisplayName("기기마다 플랫폼에 맞는 Firebase 프로젝트로 보내고, 결과는 넘긴 순서대로 돌려준다.")
+    void sendByPlatform() throws Exception {
+        // given
+        BatchResponse androidResponse = batchResponse(List.of(success("a-1"), success("a-2")));
+        BatchResponse iosResponse = batchResponse(List.of(success("i-1")));
+        given(androidMessaging.sendEach(anyList())).willReturn(androidResponse);
+        given(iosMessaging.sendEach(anyList())).willReturn(iosResponse);
+        List<PushTarget> targets = List.of(
+                new PushTarget("android-1", DevicePlatform.ANDROID),
+                new PushTarget("ios-1", DevicePlatform.IOS),
+                new PushTarget("android-2", DevicePlatform.ANDROID)
+        );
+
+        // when
+        List<PushResult> results = fcmPushSender.send(targets, MESSAGE);
+
+        // then
+        assertThat(results).containsExactly(
+                PushResult.success("a-1"),
+                PushResult.success("i-1"),
+                PushResult.success("a-2")
+        );
+        ArgumentCaptor<List<Message>> androidCaptor = ArgumentCaptor.forClass(List.class);
+        then(androidMessaging).should().sendEach(androidCaptor.capture());
+        assertThat(androidCaptor.getValue()).hasSize(2);
+        ArgumentCaptor<List<Message>> iosCaptor = ArgumentCaptor.forClass(List.class);
+        then(iosMessaging).should().sendEach(iosCaptor.capture());
+        assertThat(iosCaptor.getValue()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("인증 정보가 없는 플랫폼의 기기는 보내지 않고 NOT_CONFIGURED로 돌려준다. 토큰은 지우지 않는다.")
+    void sendToNotConfiguredPlatform() throws Exception {
+        // given
+        FcmPushSender androidOnly = new FcmPushSender(Map.of(DevicePlatform.ANDROID, androidMessaging), MESSAGE_FACTORY);
+        BatchResponse androidResponse = batchResponse(List.of(success("a-1")));
+        given(androidMessaging.sendEach(anyList())).willReturn(androidResponse);
+        List<PushTarget> targets = List.of(
+                new PushTarget("ios-1", DevicePlatform.IOS),
+                new PushTarget("android-1", DevicePlatform.ANDROID)
+        );
+
+        // when
+        List<PushResult> results = androidOnly.send(targets, MESSAGE);
+
+        // then
+        assertThat(results).containsExactly(
+                PushResult.failure(NoOpPushSender.NOT_CONFIGURED_ERROR_CODE, false),
+                PushResult.success("a-1")
+        );
+        then(iosMessaging).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
     @DisplayName("토큰이 500개를 넘으면 500개씩 나눠 보낸다.")
     void sendInBatches() throws Exception {
         // given
-        List<String> tokens = IntStream.range(0, FcmPushSender.MAX_BATCH_SIZE + 1).mapToObj(i -> "token-" + i).toList();
-        given(firebaseMessaging.sendEach(anyList())).willAnswer(invocation -> {
+        String[] tokens = IntStream.range(0, FcmPushSender.MAX_BATCH_SIZE + 1).mapToObj(i -> "token-" + i)
+                .toArray(String[]::new);
+        given(androidMessaging.sendEach(anyList())).willAnswer(invocation -> {
             List<Message> messages = invocation.getArgument(0);
             List<SendResponse> responses = new ArrayList<>();
             for (int i = 0; i < messages.size(); i++) {
@@ -86,12 +152,12 @@ class FcmPushSenderTest {
         });
 
         // when
-        List<PushResult> results = fcmPushSender.send(tokens, MESSAGE);
+        List<PushResult> results = fcmPushSender.send(android(tokens), MESSAGE);
 
         // then
-        assertThat(results).hasSize(tokens.size());
+        assertThat(results).hasSize(tokens.length);
         ArgumentCaptor<List<Message>> captor = ArgumentCaptor.forClass(List.class);
-        then(firebaseMessaging).should(times(2)).sendEach(captor.capture());
+        then(androidMessaging).should(times(2)).sendEach(captor.capture());
         assertThat(captor.getAllValues()).extracting(List::size).containsExactly(FcmPushSender.MAX_BATCH_SIZE, 1);
     }
 
@@ -101,10 +167,10 @@ class FcmPushSenderTest {
         // given
         FirebaseMessagingException exception = mock(FirebaseMessagingException.class);
         given(exception.getErrorCode()).willReturn(ErrorCode.UNAUTHENTICATED);
-        given(firebaseMessaging.sendEach(anyList())).willThrow(exception);
+        given(androidMessaging.sendEach(anyList())).willThrow(exception);
 
         // when
-        List<PushResult> results = fcmPushSender.send(List.of("t1", "t2"), MESSAGE);
+        List<PushResult> results = fcmPushSender.send(android("t1", "t2"), MESSAGE);
 
         // then
         assertThat(results).containsExactly(
@@ -121,7 +187,8 @@ class FcmPushSenderTest {
 
         // then
         assertThat(results).isEmpty();
-        then(firebaseMessaging).shouldHaveNoInteractions();
+        then(androidMessaging).shouldHaveNoInteractions();
+        then(iosMessaging).shouldHaveNoInteractions();
     }
 
     @Test
@@ -134,6 +201,12 @@ class FcmPushSenderTest {
         assertThat(FcmPushSender.errorCodeOf(withoutCode)).isEqualTo(FcmPushSender.UNKNOWN_ERROR_CODE);
         assertThat(FcmPushSender.errorCodeOf(null)).isEqualTo(FcmPushSender.UNKNOWN_ERROR_CODE);
         assertThat(FcmPushSender.toResult(failure(null))).isEqualTo(PushResult.failure(FcmPushSender.UNKNOWN_ERROR_CODE, false));
+    }
+
+    private List<PushTarget> android(String... tokens) {
+        return Arrays.stream(tokens)
+                .map(token -> new PushTarget(token, DevicePlatform.ANDROID))
+                .toList();
     }
 
     private BatchResponse batchResponse(List<SendResponse> responses) {

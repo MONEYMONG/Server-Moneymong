@@ -10,9 +10,9 @@ import java.util.List;
 public interface PushSender {
 
     /**
-     * 토큰마다 메시지를 보낸다.
+     * 기기마다 메시지를 보낸다.
      *
-     * <p>기기별 실패는 예외가 아니라 결과로 돌려준다. 결과는 {@code tokens}와 같은 순서, 같은 개수다.
+     * <p>기기별 실패는 예외가 아니라 결과로 돌려준다. 결과는 {@code targets}와 같은 순서, 같은 개수다.
      */
-    List<PushResult> send(List<String> tokens, PushMessage message);
+    List<PushResult> send(List<PushTarget> targets, PushMessage message);
 }

@@ -6,22 +6,28 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MessagingErrorCode;
 import com.google.firebase.messaging.SendResponse;
+import com.moneymong.domain.notification.entity.enums.DevicePlatform;
 import com.moneymong.domain.notification.push.PushMessage;
 import com.moneymong.domain.notification.push.PushResult;
 import com.moneymong.domain.notification.push.PushSender;
+import com.moneymong.domain.notification.push.PushTarget;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
+import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * FCM으로 알림을 보낸다.
+ *
+ * <p>Android와 iOS는 서로 다른 Firebase 프로젝트를 쓰므로, 기기의 플랫폼에 맞는 프로젝트로 보낸다.
+ * 다른 프로젝트로 보내면 FCM이 SENDER_ID_MISMATCH를 주고 토큰이 지워지기 때문이다.
+ * 인증 정보가 없는 플랫폼의 기기는 보내지 않고 {@link NoOpPushSender#NOT_CONFIGURED_ERROR_CODE}로 돌려준다.
  */
 @Slf4j
-@RequiredArgsConstructor
 public class FcmPushSender implements PushSender {
 
     // FCM sendEach 한 번에 보낼 수 있는 최대 메시지 수
@@ -37,20 +43,59 @@ public class FcmPushSender implements PushSender {
             MessagingErrorCode.SENDER_ID_MISMATCH
     );
 
-    private final FirebaseMessaging firebaseMessaging;
+    private final Map<DevicePlatform, FirebaseMessaging> firebaseMessagings;
     private final FcmMessageFactory messageFactory;
 
+    public FcmPushSender(Map<DevicePlatform, FirebaseMessaging> firebaseMessagings, FcmMessageFactory messageFactory) {
+        this.firebaseMessagings = Map.copyOf(firebaseMessagings);
+        this.messageFactory = messageFactory;
+    }
+
     @Override
-    public List<PushResult> send(List<String> tokens, PushMessage message) {
+    public List<PushResult> send(List<PushTarget> targets, PushMessage message) {
+        PushResult[] results = new PushResult[targets.size()];
+        for (DevicePlatform platform : DevicePlatform.values()) {
+            List<Integer> indexes = IntStream.range(0, targets.size())
+                    .filter(i -> targets.get(i).platform() == platform)
+                    .boxed()
+                    .toList();
+            if (indexes.isEmpty()) {
+                continue;
+            }
+
+            List<String> tokens = indexes.stream()
+                    .map(i -> targets.get(i).token())
+                    .toList();
+            List<PushResult> platformResults = sendToPlatform(platform, tokens, message);
+            for (int i = 0; i < indexes.size(); i++) {
+                results[indexes.get(i)] = platformResults.get(i);
+            }
+        }
+        return List.of(results);
+    }
+
+    private List<PushResult> sendToPlatform(DevicePlatform platform, List<String> tokens, PushMessage message) {
+        FirebaseMessaging firebaseMessaging = firebaseMessagings.get(platform);
+        if (firebaseMessaging == null) {
+            log.info("[NOTIFICATION] {} Firebase가 설정되지 않아 알림을 보내지 않았다 type={} tokenCount={}",
+                    platform, message.type(), tokens.size());
+            return Collections.nCopies(tokens.size(), PushResult.failure(NoOpPushSender.NOT_CONFIGURED_ERROR_CODE, false));
+        }
+
         List<PushResult> results = new ArrayList<>(tokens.size());
         for (int from = 0; from < tokens.size(); from += MAX_BATCH_SIZE) {
             List<String> batch = tokens.subList(from, Math.min(from + MAX_BATCH_SIZE, tokens.size()));
-            results.addAll(sendBatch(batch, message));
+            results.addAll(sendBatch(firebaseMessaging, platform, batch, message));
         }
         return results;
     }
 
-    private List<PushResult> sendBatch(List<String> tokens, PushMessage message) {
+    private List<PushResult> sendBatch(
+            FirebaseMessaging firebaseMessaging,
+            DevicePlatform platform,
+            List<String> tokens,
+            PushMessage message
+    ) {
         List<Message> messages = tokens.stream()
                 .map(token -> messageFactory.create(token, message))
                 .toList();
@@ -63,8 +108,8 @@ public class FcmPushSender implements PushSender {
         } catch (FirebaseMessagingException e) {
             // 인증 실패처럼 묶음 전체가 실패한 경우. 기기별 결과로 바꿔 이력에 남긴다.
             String errorCode = errorCodeOf(e);
-            log.warn("[NOTIFICATION] FCM 발송 요청이 실패했다 type={} tokenCount={} errorCode={}",
-                    message.type(), tokens.size(), errorCode);
+            log.warn("[NOTIFICATION] FCM 발송 요청이 실패했다 platform={} type={} tokenCount={} errorCode={}",
+                    platform, message.type(), tokens.size(), errorCode);
             return Collections.nCopies(tokens.size(), PushResult.failure(errorCode, false));
         }
     }
