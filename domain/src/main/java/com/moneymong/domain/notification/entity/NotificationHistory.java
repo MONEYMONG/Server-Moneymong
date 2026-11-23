@@ -6,6 +6,7 @@ import static lombok.AccessLevel.PROTECTED;
 import com.moneymong.domain.notification.entity.enums.DevicePlatform;
 import com.moneymong.domain.notification.entity.enums.NotificationStatus;
 import com.moneymong.domain.notification.entity.enums.NotificationType;
+import com.moneymong.domain.notification.push.PushResult;
 import com.moneymong.global.domain.TimeBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -81,9 +82,7 @@ public class NotificationHistory extends TimeBaseEntity {
             NotificationType type,
             String payload,
             DeviceToken deviceToken,
-            boolean success,
-            String fcmMessageId,
-            String errorCode
+            PushResult result
     ) {
         return NotificationHistory.builder()
                 .userId(userId)
@@ -91,9 +90,9 @@ public class NotificationHistory extends TimeBaseEntity {
                 .payload(payload)
                 .deviceTokenId(deviceToken.getId())
                 .platform(deviceToken.getPlatform())
-                .status(success ? NotificationStatus.SUCCESS : NotificationStatus.FAILED)
-                .fcmMessageId(fcmMessageId)
-                .errorCode(errorCode)
+                .status(result.status())
+                .fcmMessageId(result.messageId())
+                .errorCode(result.errorCode())
                 .build();
     }
 

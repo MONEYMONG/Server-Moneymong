@@ -82,8 +82,10 @@ class NotificationRecorderTest {
         notificationRecorder.recordDelivered(
                 USER_ID,
                 MESSAGE,
-                List.of(android, ios),
-                List.of(PushResult.success("message-1"), PushResult.failure("UNREGISTERED", true))
+                List.of(
+                        new DeviceDelivery(android, PushResult.success("message-1")),
+                        new DeviceDelivery(ios, PushResult.failure("UNREGISTERED", true))
+                )
         );
 
         // then
@@ -112,7 +114,7 @@ class NotificationRecorderTest {
 
         // when
         notificationRecorder.recordDelivered(
-                USER_ID, MESSAGE, List.of(android), List.of(PushResult.failure("UNAVAILABLE", false))
+                USER_ID, MESSAGE, List.of(new DeviceDelivery(android, PushResult.failure("UNAVAILABLE", false)))
         );
 
         // then

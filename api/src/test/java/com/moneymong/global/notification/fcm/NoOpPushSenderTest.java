@@ -24,8 +24,8 @@ class NoOpPushSenderTest {
 
         // then
         assertThat(results).containsExactly(
-                PushResult.failure(NoOpPushSender.NOT_CONFIGURED_ERROR_CODE, false),
-                PushResult.failure(NoOpPushSender.NOT_CONFIGURED_ERROR_CODE, false)
+                PushResult.notConfigured(),
+                PushResult.notConfigured()
         );
     }
 }

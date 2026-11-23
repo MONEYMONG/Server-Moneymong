@@ -4,6 +4,7 @@ import com.moneymong.domain.notification.entity.DeviceToken;
 import com.moneymong.domain.notification.entity.enums.DevicePlatform;
 import com.moneymong.domain.notification.entity.enums.NotificationStatus;
 import com.moneymong.domain.notification.push.PushResult;
+import com.moneymong.domain.notification.service.DeviceDelivery;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,11 +20,13 @@ public class NotificationDeliveryResponse {
     private NotificationStatus status;
     private String errorCode;
 
-    public static NotificationDeliveryResponse delivered(DeviceToken deviceToken, PushResult result) {
+    public static NotificationDeliveryResponse delivered(DeviceDelivery delivery) {
+        DeviceToken deviceToken = delivery.deviceToken();
+        PushResult result = delivery.result();
         return new NotificationDeliveryResponse(
                 deviceToken.getDeviceId(),
                 deviceToken.getPlatform(),
-                result.success() ? NotificationStatus.SUCCESS : NotificationStatus.FAILED,
+                result.status(),
                 result.errorCode()
         );
     }

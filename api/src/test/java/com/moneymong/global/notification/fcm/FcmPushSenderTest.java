@@ -129,7 +129,7 @@ class FcmPushSenderTest {
 
         // then
         assertThat(results).containsExactly(
-                PushResult.failure(NoOpPushSender.NOT_CONFIGURED_ERROR_CODE, false),
+                PushResult.notConfigured(),
                 PushResult.success("a-1")
         );
         then(iosMessaging).shouldHaveNoInteractions();

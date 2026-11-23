@@ -14,12 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NoOpPushSender implements PushSender {
 
-    public static final String NOT_CONFIGURED_ERROR_CODE = "NOT_CONFIGURED";
-
     @Override
     public List<PushResult> send(List<PushTarget> targets, PushMessage message) {
         log.info("[NOTIFICATION] Firebase가 설정되지 않아 알림을 보내지 않았다 type={} tokenCount={}",
                 message.type(), targets.size());
-        return Collections.nCopies(targets.size(), PushResult.failure(NOT_CONFIGURED_ERROR_CODE, false));
+        return Collections.nCopies(targets.size(), PushResult.notConfigured());
     }
 }

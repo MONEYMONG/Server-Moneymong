@@ -85,7 +85,10 @@ class NotificationServiceTest {
                 org.assertj.core.groups.Tuple.tuple("device-1", DevicePlatform.ANDROID, NotificationStatus.SUCCESS, null),
                 org.assertj.core.groups.Tuple.tuple("device-2", DevicePlatform.IOS, NotificationStatus.FAILED, "UNREGISTERED")
         );
-        then(notificationRecorder).should().recordDelivered(USER_ID, MESSAGE, List.of(android, ios), results);
+        then(notificationRecorder).should().recordDelivered(USER_ID, MESSAGE, List.of(
+                new DeviceDelivery(android, results.get(0)),
+                new DeviceDelivery(ios, results.get(1))
+        ));
     }
 
     @Test
@@ -147,7 +150,7 @@ class NotificationServiceTest {
         // when, then
         assertThatThrownBy(() -> notificationService.send(USER_ID, MESSAGE))
                 .isInstanceOf(IllegalStateException.class);
-        then(notificationRecorder).should(never()).recordDelivered(any(), any(), anyList(), anyList());
+        then(notificationRecorder).should(never()).recordDelivered(any(), any(), anyList());
     }
 
     @Test
@@ -205,7 +208,7 @@ class NotificationServiceTest {
         // then
         assertThat(response.getDeliveries()).extracting(NotificationDeliveryResponse::getStatus)
                 .containsExactly(NotificationStatus.SUCCESS);
-        then(notificationRecorder).should().recordDelivered(eq(USER_ID), eq(expected), anyList(), anyList());
+        then(notificationRecorder).should().recordDelivered(eq(USER_ID), eq(expected), anyList());
     }
 
     @Test

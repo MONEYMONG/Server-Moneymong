@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.moneymong.domain.notification.entity.enums.DevicePlatform;
 import com.moneymong.domain.notification.entity.enums.NotificationStatus;
 import com.moneymong.domain.notification.entity.enums.NotificationType;
+import com.moneymong.domain.notification.push.PushResult;
 import java.time.ZonedDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,8 +28,8 @@ class NotificationHistoryTest {
         ReflectionTestUtils.setField(deviceToken, "id", DEVICE_TOKEN_ID);
 
         // when
-        NotificationHistory success = NotificationHistory.delivered(USER_ID, NotificationType.TEST, PAYLOAD, deviceToken, true, "message-1", null);
-        NotificationHistory failure = NotificationHistory.delivered(USER_ID, NotificationType.TEST, PAYLOAD, deviceToken, false, null, "UNREGISTERED");
+        NotificationHistory success = NotificationHistory.delivered(USER_ID, NotificationType.TEST, PAYLOAD, deviceToken, PushResult.success("message-1"));
+        NotificationHistory failure = NotificationHistory.delivered(USER_ID, NotificationType.TEST, PAYLOAD, deviceToken, PushResult.failure("UNREGISTERED", true));
 
         // then
         assertThat(success.getStatus()).isEqualTo(NotificationStatus.SUCCESS);

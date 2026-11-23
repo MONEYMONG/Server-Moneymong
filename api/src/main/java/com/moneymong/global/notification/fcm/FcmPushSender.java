@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * <p>Android와 iOS는 서로 다른 Firebase 프로젝트를 쓰므로, 기기의 플랫폼에 맞는 프로젝트로 보낸다.
  * 다른 프로젝트로 보내면 FCM이 SENDER_ID_MISMATCH를 주고 토큰이 지워지기 때문이다.
- * 인증 정보가 없는 플랫폼의 기기는 보내지 않고 {@link NoOpPushSender#NOT_CONFIGURED_ERROR_CODE}로 돌려준다.
+ * 인증 정보가 없는 플랫폼의 기기는 보내지 않고 {@link PushResult#notConfigured()}로 돌려준다.
  */
 @Slf4j
 public class FcmPushSender implements PushSender {
@@ -79,7 +79,7 @@ public class FcmPushSender implements PushSender {
         if (firebaseMessaging == null) {
             log.info("[NOTIFICATION] {} Firebase가 설정되지 않아 알림을 보내지 않았다 type={} tokenCount={}",
                     platform, message.type(), tokens.size());
-            return Collections.nCopies(tokens.size(), PushResult.failure(NoOpPushSender.NOT_CONFIGURED_ERROR_CODE, false));
+            return Collections.nCopies(tokens.size(), PushResult.notConfigured());
         }
 
         List<PushResult> results = new ArrayList<>(tokens.size());

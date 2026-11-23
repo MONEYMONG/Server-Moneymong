@@ -45,27 +45,18 @@ public class NotificationRecorder {
     public void recordDelivered(
             Long userId,
             PushMessage message,
-            List<DeviceToken> deviceTokens,
-            List<PushResult> results
+            List<DeviceDelivery> deliveries
     ) {
         String payload = toPayload(message);
         List<NotificationHistory> histories = new ArrayList<>();
         int successCount = 0;
         int deletedTokenCount = 0;
 
-        for (int i = 0; i < deviceTokens.size(); i++) {
-            DeviceToken deviceToken = deviceTokens.get(i);
-            PushResult result = results.get(i);
+        for (DeviceDelivery delivery : deliveries) {
+            DeviceToken deviceToken = delivery.deviceToken();
+            PushResult result = delivery.result();
 
-            histories.add(NotificationHistory.delivered(
-                    userId,
-                    message.type(),
-                    payload,
-                    deviceToken,
-                    result.success(),
-                    result.messageId(),
-                    result.errorCode()
-            ));
+            histories.add(NotificationHistory.delivered(userId, message.type(), payload, deviceToken, result));
 
             if (result.success()) {
                 successCount++;
@@ -78,7 +69,7 @@ public class NotificationRecorder {
         notificationHistoryRepository.saveAll(histories);
 
         log.info("[NOTIFICATION] 알림을 발송했다 userId={} type={} deviceCount={} successCount={} deletedTokenCount={}",
-                userId, message.type(), deviceTokens.size(), successCount, deletedTokenCount);
+                userId, message.type(), deliveries.size(), successCount, deletedTokenCount);
     }
 
     private String toPayload(PushMessage message) {

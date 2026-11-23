@@ -105,10 +105,13 @@ public class NotificationService {
             );
         }
 
-        notificationRecorder.recordDelivered(userId, message, deviceTokens, results);
+        List<DeviceDelivery> deliveries = IntStream.range(0, deviceTokens.size())
+                .mapToObj(i -> new DeviceDelivery(deviceTokens.get(i), results.get(i)))
+                .toList();
+        notificationRecorder.recordDelivered(userId, message, deliveries);
 
-        return IntStream.range(0, deviceTokens.size())
-                .mapToObj(i -> NotificationDeliveryResponse.delivered(deviceTokens.get(i), results.get(i)))
+        return deliveries.stream()
+                .map(NotificationDeliveryResponse::delivered)
                 .toList();
     }
 }
