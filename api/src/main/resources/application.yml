@@ -74,3 +74,11 @@ agency:
 app:
   minimum:
     version: ${APP_MINIMUM_VERSION}
+
+# 알림(FCM). credentials가 비어 있는 플랫폼으로는 실제로 보내지 않는다.
+notification:
+  fcm:
+    # 서비스 계정 JSON을 base64로 인코딩한 값. Android와 iOS가 서로 다른 Firebase 프로젝트라 따로 받는다.
+    credentials:
+      android: ${FIREBASE_CREDENTIALS_ANDROID:}
+      ios: ${FIREBASE_CREDENTIALS_IOS:}

@@ -28,6 +28,15 @@ dependencies {
 	// P6spy
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 
+	// FCM 알림 발송. Firestore, Cloud Storage는 쓰지 않아 뺀다(gRPC 등 큰 의존성을 끌고 온다).
+	implementation('com.google.firebase:firebase-admin:9.11.0') {
+		exclude group: 'com.google.cloud', module: 'google-cloud-firestore'
+		exclude group: 'com.google.cloud', module: 'google-cloud-storage'
+	}
+	// FirebaseOptions가 쓰는 JacksonFactory. firebase-admin이 직접 선언하지 않고 위에서 뺀 모듈로 받아 오므로 직접 둔다.
+	// google-http-client와 같은 버전으로 맞춘다(FirebaseConfigTest가 초기화를 확인한다).
+	implementation 'com.google.http-client:google-http-client-jackson2:2.2.0'
+
 	// 패키지 의존 규칙 검사
 	testImplementation 'com.tngtech.archunit:archunit-junit5:1.4.1'
 }

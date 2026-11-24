@@ -9,6 +9,7 @@ public class MoneymongConstant {
     public static Integer NOT_FOUND = HttpStatus.NOT_FOUND.value();
     public static Integer INTERNAL_SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR.value();
     public static Integer UPGRADE_REQUIRED = HttpStatus.UPGRADE_REQUIRED.value();
+    public static Integer TOO_MANY_REQUESTS = HttpStatus.TOO_MANY_REQUESTS.value();
 
     // --- 장부 ---
     public static Integer MIN_ALLOWED_AMOUNT = 0;

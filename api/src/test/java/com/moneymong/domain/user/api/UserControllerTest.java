@@ -6,11 +6,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.moneymong.domain.user.service.dto.request.LoginRequest;
+import com.moneymong.domain.user.service.dto.request.UpdateNotificationSettingRequest;
+import com.moneymong.domain.user.service.dto.response.NotificationSettingResponse;
 import com.moneymong.domain.user.service.dto.response.LoginSuccessResponse;
 import com.moneymong.domain.user.service.dto.response.UserProfileResponse;
 import com.moneymong.domain.user.service.UserFacadeService;
@@ -122,5 +125,44 @@ class UserControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk());
 
         then(userFacadeService).should().delete(USER_ID);
+    }
+
+    @Test
+    @DisplayName("내 알림 설정을 조회한다.")
+    void getNotificationSetting() throws Exception {
+        given(userService.getNotificationSetting(USER_ID)).willReturn(new NotificationSettingResponse(true));
+
+        mockMvc.perform(get("/api/v1/users/me/notification-settings"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pushEnabled").value(true));
+    }
+
+    @Test
+    @DisplayName("내 알림 설정을 바꾸고 바뀐 값을 반환한다.")
+    void updateNotificationSetting() throws Exception {
+        given(userService.updateNotificationSetting(org.mockito.ArgumentMatchers.eq(USER_ID), any(UpdateNotificationSettingRequest.class)))
+                .willReturn(new NotificationSettingResponse(false));
+
+        mockMvc.perform(patch("/api/v1/users/me/notification-settings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(Map.of("pushEnabled", false))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pushEnabled").value(false));
+
+        ArgumentCaptor<UpdateNotificationSettingRequest> captor = ArgumentCaptor.forClass(UpdateNotificationSettingRequest.class);
+        then(userService).should().updateNotificationSetting(org.mockito.ArgumentMatchers.eq(USER_ID), captor.capture());
+        assertThat(captor.getValue().getPushEnabled()).isFalse();
+    }
+
+    @Test
+    @DisplayName("알림 설정 변경에 pushEnabled가 없으면 400을 반환한다.")
+    void updateNotificationSettingWithoutValue() throws Exception {
+        mockMvc.perform(patch("/api/v1/users/me/notification-settings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("GLOBAL-400"));
+
+        then(userService).shouldHaveNoInteractions();
     }
 }

@@ -9,7 +9,9 @@ import com.moneymong.domain.user.oauth.dto.OAuthUserInfo;
 import com.moneymong.domain.user.service.oauth.OAuthService;
 import com.moneymong.domain.auth.dto.Tokens;
 import com.moneymong.domain.auth.service.TokenService;
+import com.moneymong.domain.user.event.UserWithdrawnEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ public class UserFacadeService {
     private final OAuthService oAuthService;
     private final UserUniversityService userUniversityService;
     private final AgencyUserService agencyUserService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public LoginSuccessResponse login(LoginRequest loginRequest) {
         OAuthUserDataResponse oAuthUserData = oAuthService.login(loginRequest);
@@ -47,5 +50,6 @@ public class UserFacadeService {
         userService.delete(userId);
         userUniversityService.delete(userId);
         agencyUserService.deleteAll(userId);
+        eventPublisher.publishEvent(new UserWithdrawnEvent(userId));
     }
 }

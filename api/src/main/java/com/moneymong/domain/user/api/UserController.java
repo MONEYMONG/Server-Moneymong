@@ -1,6 +1,8 @@
 package com.moneymong.domain.user.api;
 
 import com.moneymong.domain.user.service.dto.request.LoginRequest;
+import com.moneymong.domain.user.service.dto.request.UpdateNotificationSettingRequest;
+import com.moneymong.domain.user.service.dto.response.NotificationSettingResponse;
 import com.moneymong.domain.user.service.dto.response.UserProfileResponse;
 import com.moneymong.domain.user.service.UserFacadeService;
 import com.moneymong.domain.user.service.UserService;
@@ -44,5 +46,22 @@ public class UserController {
             @AuthenticationPrincipal JwtAuthentication user
     ) {
         userFacadeService.delete(user.getId());
+    }
+
+    @Operation(summary = "내 알림 설정 조회")
+    @GetMapping("/me/notification-settings")
+    public NotificationSettingResponse getNotificationSetting(
+            @AuthenticationPrincipal JwtAuthentication user
+    ) {
+        return userService.getNotificationSetting(user.getId());
+    }
+
+    @Operation(summary = "내 알림 설정 변경")
+    @PatchMapping("/me/notification-settings")
+    public NotificationSettingResponse updateNotificationSetting(
+            @AuthenticationPrincipal JwtAuthentication user,
+            @RequestBody @Valid UpdateNotificationSettingRequest request
+    ) {
+        return userService.updateNotificationSetting(user.getId(), request);
     }
 }
